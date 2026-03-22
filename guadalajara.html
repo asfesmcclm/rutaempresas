@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Censo Guadalajara 2026</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1e293b",
+                        "accent": "#4f46e5",
+                        "blanca": "#ef4444",
+                        "si": "#10b981",
+                    },
+                    fontFamily: { "sans": ["Inter", "system-ui"] },
+                },
+            },
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body { background-color: #f8fafc; }
+        .card-blanca { border: 2px solid #fee2e2; border-left: 8px solid #ef4444; }
+        .card-si { border: 2px solid #d1fae5; border-left: 8px solid #10b981; }
+    </style>
+</head>
+<body class="text-slate-900">
+
+<header class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+    <div class="px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-slate-700 font-bold">analytics</span>
+            <h1 class="text-lg font-extrabold tracking-tight text-slate-800">Censo Guadalajara 2026</h1>
+        </div>
+        <div class="text-[10px] font-black text-slate-400 bg-slate-100 px-2 py-1 rounded">V1.6</div>
+    </div>
+
+    <div class="px-5 pb-4 space-y-3">
+        <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+            <input id="buscador" class="w-full bg-slate-50 border-slate-200 rounded-xl py-2.5 pl-10 pr-10 text-sm focus:ring-2 focus:ring-accent/20 transition-all outline-none" placeholder="Buscar empresa o municipio..." type="text"/>
+            <button id="clear-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 hidden">
+                <span class="material-symbols-outlined text-sm">cancel</span>
+            </button>
+        </div>
+        
+        <div class="flex gap-2 overflow-x-auto no-scrollbar" id="filtros">
+            <button class="filter-btn whitespace-nowrap px-4 py-1.5 rounded-full bg-slate-800 text-white text-[11px] font-bold transition-all" data-tipo="TODAS">Todas</button>
+            <button class="filter-btn whitespace-nowrap px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 text-[11px] font-bold transition-all" data-tipo="SI">Con Elecciones</button>
+            <button class="filter-btn whitespace-nowrap px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 text-[11px] font-bold transition-all" data-tipo="BLANCA">Blancas</button>
+        </div>
+    </div>
+
+    <div id="stats-bar" class="flex border-t border-slate-100 bg-slate-50/50 px-5 py-2 justify-between items-center min-h-[40px]"></div>
+</header>
+
+<main class="px-5 py-6 space-y-4">
+    <div id="lista-empresas" class="space-y-4"></div>
+</main>
+
+<script src="datosGU.js"></script>
+
+<script>
+    const buscador = document.getElementById('buscador');
+    const clearBtn = document.getElementById('clear-btn');
+    const lista = document.getElementById('lista-empresas');
+    const statsBar = document.getElementById('stats-bar');
+    const filtrosBtn = document.querySelectorAll('.filter-btn');
+    
+    let filtroTipo = 'TODAS';
+    let dataParaExportar = [];
+
+    // Normaliza el tipo según tu estructura de datosGU.js
+    function normalizarTipo(texto) {
+        if (!texto) return "BLANCA";
+        const t = texto.toLowerCase().trim();
+        if (t.includes("elecciones") || t === "si") return "SI";
+        return "BLANCA";
+    }
+
+    // EXPORTACIÓN DINÁMICA A CSV
+    function exportarCSV() {
+        if (!dataParaExportar.length) {
+            alert("No hay datos en la lista actual para exportar");
+            return;
+        }
+
+        // 1. Nombre de archivo basado en el buscador
+        const textoBusqueda = buscador.value.trim().replace(/[^a-z0-9]/gi, '_');
+        const nombreCriterio = textoBusqueda ? textoBusqueda.toUpperCase() : "GENERAL";
+        const fecha = new Date().toISOString().slice(0, 10);
+        
+        // 2. Cabeceras
+        const headers = ["ID", "Empresa", "Tipo", "Municipio", "Direccion", "CP", "Trabajadores", "CNAE", "Sector"];
+        
+        // 3. Procesar Filas (con soporte para comillas internas y punto y coma para Excel ES)
+        const rows = dataParaExportar.map(e => {
+            const tipoLimpio = normalizarTipo(e.tipo) === 'SI' ? 'Con Elecciones' : 'Blanca';
+            return [
+                e.id || '',
+                e.empresa || '',
+                tipoLimpio,
+                e.municipio || '',
+                e.direccion || '',
+                e.cp || '',
+                e.trabajadores || '',
+                e.cnae || '',
+                e.sector || ''
+            ].map(text => `"${String(text).replace(/"/g, '""')}"`).join(';');
+        });
+
+        // 4. Crear contenido con BOM para soporte de tildes/ñ en Excel
+        const csvContent = "\uFEFF" + headers.join(';') + "\n" + rows.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Censo_${nombreCriterio}_${fecha}.csv`);
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function abrirRuta(empresa, municipio, direccion, cp) {
+        const destinoFull = `${direccion}, ${cp} ${municipio}, Guadalajara, España`;
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinoFull)}&travelmode=driving`;
+        window.open(url, '_blank');
+    }
+
+    function actualizarStats(data) {
+        const total = data.length;
+        const si = data.filter(e => normalizarTipo(e.tipo) === 'SI').length;
+        const blanca = data.filter(e => normalizarTipo(e.tipo) === 'BLANCA').length;
+        
+        statsBar.innerHTML = `
+            <div class="flex items-center gap-3">
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-bold text-slate-700">${total} <span class="text-slate-400 font-medium text-[9px]">TOTAL</span></span>
+                    <span class="text-[10px] font-bold text-si">${si} <span class="text-slate-400 font-medium text-[9px]">SI</span></span>
+                    <span class="text-[10px] font-bold text-blanca">${blanca} <span class="text-slate-400 font-medium text-[9px]">BLANCA</span></span>
+                </div>
+            </div>
+            <button onclick="exportarCSV()" class="flex items-center gap-1 bg-emerald-600 text-white px-2.5 py-1 rounded-md font-black uppercase text-[9px] active:scale-95 transition-transform shadow-sm">
+                <span class="material-symbols-outlined text-[14px]">download</span> Descargar CSV
+            </button>
+        `;
+    }
+
+    function render(query = '') {
+        if (typeof empresas === 'undefined') {
+            lista.innerHTML = '<div class="py-10 text-center text-slate-400 text-xs font-medium italic">Archivo datosGU.js no cargado...</div>';
+            return;
+        }
+
+        const q = query.toLowerCase().trim();
+        
+        // Mostrar/Ocultar botón X
+        clearBtn.classList.toggle('hidden', q === '');
+
+        const filtrados = empresas.filter(e => {
+            const matchQuery = (e.empresa || '').toLowerCase().includes(q) || 
+                               (e.municipio || '').toLowerCase().includes(q) || 
+                               (e.sector && e.sector.toLowerCase().includes(q)) ||
+                               (e.cif && e.cif.toLowerCase().includes(q)) ||
+                               (e.cnae && e.cnae.toString().includes(q));
+            
+            const tipoEmpresa = normalizarTipo(e.tipo);
+            const matchTipo = filtroTipo === 'TODAS' ? true : tipoEmpresa === filtroTipo;
+            
+            return matchQuery && matchTipo;
+        });
+
+        dataParaExportar = filtrados;
+        actualizarStats(filtrados);
+
+        if (filtrados.length === 0) {
+            lista.innerHTML = '<div class="py-20 text-center text-slate-400 text-sm italic font-medium">No se han encontrado empresas</div>';
+            return;
+        }
+
+        lista.innerHTML = filtrados.slice(0, 100).map(e => {
+            const esSi = normalizarTipo(e.tipo) === 'SI';
+            const empresaEsc = (e.empresa || '').replace(/'/g, "\\'");
+            const dirEsc = (e.direccion || '').replace(/'/g, "\\'");
+
+            return `
+            <div class="bg-white rounded-xl p-4 shadow-sm ${esSi ? 'card-si' : 'card-blanca'}">
+                <div class="flex justify-between items-start mb-3">
+                    <h3 class="font-extrabold text-sm text-slate-800 leading-tight uppercase max-w-[70%]">${e.empresa}</h3>
+                    <div class="flex flex-col items-end gap-1">
+                        <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-slate-50 text-slate-400 border border-slate-100">${e.id}</span>
+                        <span class="text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${esSi ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}">
+                            ${esSi ? 'Con Elecciones' : 'Blanca'}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 mb-4">
+                    <div class="flex items-center gap-1.5 text-[11px] text-slate-600 font-medium">
+                        <span class="material-symbols-outlined text-[14px] text-slate-400 font-bold">location_on</span>
+                        <span class="truncate">${e.municipio}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[11px] text-slate-600 font-medium">
+                        <span class="material-symbols-outlined text-[14px] text-slate-400 font-bold">groups</span>
+                        <span>${e.trabajadores} empl.</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[11px] text-slate-600 font-medium">
+                        <span class="material-symbols-outlined text-[14px] text-slate-400 font-bold">label</span>
+                        <span>CNAE: ${e.cnae || 'N/A'}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[11px] text-slate-600 font-medium">
+                        <span class="material-symbols-outlined text-[14px] text-slate-400 font-bold">factory</span>
+                        <span class="truncate text-[9px] leading-tight">${e.sector || 'N/A'}</span>
+                    </div>
+                    <div class="col-span-2 flex items-center gap-1.5 text-[11px] text-slate-500 font-medium border-t border-slate-50 pt-2 mt-1">
+                        <span class="material-symbols-outlined text-[14px] text-slate-400 font-bold">map</span>
+                        <span class="truncate italic">${e.direccion || 'N/A'}</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <button onclick="abrirRuta('${empresaEsc}', '${e.municipio}', '${dirEsc}', '${e.cp}')" 
+                        class="w-full bg-slate-800 text-white py-3 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-sm">directions_car</span> Calcular Ruta
+                    </button>
+                    
+                    <button onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(e.empresa + ' ' + e.municipio)}', '_blank')" 
+                        class="w-full border border-slate-200 text-slate-600 py-2.5 rounded-lg text-[10px] font-bold uppercase flex items-center justify-center gap-2 active:bg-slate-50 transition-all">
+                        <span class="material-symbols-outlined text-sm">search</span> Más info
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // EVENTOS
+    filtrosBtn.forEach(btn => btn.addEventListener('click', () => {
+        filtrosBtn.forEach(b => {
+            b.className = "filter-btn whitespace-nowrap px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 text-[11px] font-bold transition-all";
+        });
+        btn.className = "filter-btn whitespace-nowrap px-4 py-1.5 rounded-full bg-slate-800 text-white text-[11px] font-bold transition-all";
+        filtroTipo = btn.dataset.tipo;
+        render(buscador.value);
+    }));
+
+    buscador.addEventListener('input', (e) => render(e.target.value));
+
+    clearBtn.addEventListener('click', () => {
+        buscador.value = '';
+        render('');
+        buscador.focus();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => render(), 300);
+    });
+</script>
+</body>
+</html>
