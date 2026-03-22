@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>FeSMC UGT Castilla-La Mancha</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <meta name="theme-color" content="#c0001e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="UGT CLM">
+
+  <style>
+    :root {
+      --red: #c0001e;
+      --red-dim: rgba(192,0,30,0.12);
+      --bg: #f4f5f8;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-2: #475569;
+      --text-3: #94a3b8;
+      --border: #e2e8f0;
+      --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --font: 'Outfit', sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(160deg, #1a0005 0%, #3d0010 50%, #c0001e 100%);
+      padding: 52px 20px 32px;
+      padding-top: max(52px, calc(env(safe-area-inset-top) + 20px));
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 80% 0%, rgba(255,50,70,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse at 10% 100%, rgba(100,0,20,0.4) 0%, transparent 50%);
+    }
+    .header-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .logo-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .header h1 {
+      font-size: clamp(26px, 7vw, 38px);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    .header h1 span { color: rgba(255,180,170,0.9); }
+    .header-sub {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.02em;
+    }
+
+    /* CONTENIDO */
+    .content {
+      flex: 1;
+      padding: 24px 16px;
+      padding-bottom: max(32px, calc(env(safe-area-inset-bottom) + 24px));
+      max-width: 480px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      padding: 0 4px;
+      margin-top: 6px;
+    }
+
+    /* BOTONES */
+    .btn-provincia {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 64px;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 20px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .btn-provincia::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: var(--red);
+      border-radius: 4px 0 0 4px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .btn-provincia:hover { border-color: rgba(192,0,30,0.3); }
+    .btn-provincia:active {
+      transform: scale(0.97);
+      background: #fafafa;
+    }
+    .btn-provincia:hover::before { opacity: 1; }
+
+    .btn-arrow {
+      margin-left: auto;
+      color: var(--text-3);
+      transition: all 0.2s;
+    }
+    .btn-provincia:hover .btn-arrow {
+      color: var(--red);
+      transform: translateX(3px);
+    }
+
+    /* BOTÓN CNAE */
+    .btn-cnae {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 68px;
+      background: linear-gradient(135deg, #1a0005 0%, #3d0010 60%, var(--red) 100%);
+      border-radius: var(--radius);
+      padding: 0 22px;
+      text-decoration: none;
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(192,0,30,0.35);
+      transition: all 0.2s;
+      margin-top: 6px;
+    }
+    .btn-cnae:active { transform: scale(0.97); }
+
+    .cnae-icon {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-right: 12px;
+    }
+    .cnae-text-main { display: block; font-size: 16px; font-weight: 800; }
+    .cnae-text-sub { display: block; font-size: 11px; opacity: 0.6; }
+
+    /* TOAST MENSAJE */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #333;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      box-shadow: var(--shadow-lg);
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo-badge">UGT Castilla-La Mancha</div>
+      <h1>Selecciona<br><span>tu provincia</span></h1>
+      <p class="header-sub">Accede a los recursos de tu delegación</p>
+    </div>
+  </header>
+
+  <div class="content">
+    <p class="section-label">Provincias</p>
+
+    <a href="https://asfesmcclm.github.io/albacete_emp/index.html" class="btn-provincia">
+      Albacete
+      <span class="btn-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </a>
+
+    <a href="https://asfesmcclm.github.io/ciudadreal_blancas/index.html" class="btn-provincia">
+      Ciudad Real
+      <span class="btn-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </a>
+
+    <a href="https://asfesmcclm.github.io/cuenca/" class="btn-provincia">
+      Cuenca
+      <span class="btn-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </a>
+
+    <a href="javascript:void(0)" class="btn-provincia btn-not-ready">
+      Guadalajara
+      <span class="btn-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </a>
+
+    <a href="javascript:void(0)" class="btn-provincia btn-not-ready">
+      Toledo
+      <span class="btn-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </a>
+
+    <p class="section-label" style="margin-top:10px;">Herramientas</p>
+
+    <a href="https://asfesmcclm.github.io/blancas/cnae.html" class="btn-cnae">
+      <div class="cnae-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </div>
+      <div style="flex:1">
+        <span class="cnae-text-main">Búsqueda CNAE 2025</span>
+        <span class="cnae-text-sub">626 actividades · FESMC · FICA · UGT-SP</span>
+      </div>
+      <span style="opacity:0.5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </a>
+  </div>
+
+  <div id="toast">En construcción... próximamente</div>
+
+  <script>
+    // Manejo de botones "En construcción"
+    const toast = document.getElementById('toast');
+    document.querySelectorAll('.btn-not-ready').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2500);
+      });
+    });
+
+    // Registro de Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .catch(e => console.log('SW error:', e));
+      });
+    }
+  </script>
+
+</body>
+</html>
