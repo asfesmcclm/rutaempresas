@@ -43,7 +43,7 @@
     <div class="px-5 pb-4 space-y-3">
         <div class="relative">
             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-            <input id="buscador" class="w-full bg-slate-50 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-accent/20 transition-all" placeholder="Buscar empresa o municipio..." type="text"/>
+            <input id="buscador" class="w-full bg-slate-50 border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-accent/20 transition-all outline-none" placeholder="Buscar empresa o municipio..." type="text"/>
         </div>
         
         <div class="flex gap-2 overflow-x-auto no-scrollbar" id="filtros">
@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <div id="stats-bar" class="flex border-t border-slate-100 bg-slate-50/50 px-5 py-2 justify-between items-center"></div>
+    <div id="stats-bar" class="flex border-t border-slate-100 bg-slate-50/50 px-5 py-2 justify-between items-center min-h-[40px]"></div>
 </header>
 
 <main class="px-5 py-6 space-y-4">
@@ -69,18 +69,36 @@
     const filtrosBtn = document.querySelectorAll('.filter-btn');
     
     let filtroTipo = 'TODAS';
+    let dataParaExportar = [];
 
-    // Normalización para que coincida con tu datos.js generado
     function normalizarTipo(texto) {
         if (!texto) return "BLANCA";
         const t = texto.toLowerCase().trim();
-        // Coincide con "Con elecciones" o "si"
         if (t.includes("elecciones") || t === "si") return "SI";
         return "BLANCA";
     }
 
+    function exportarCSV() {
+        if (!dataParaExportar.length) return;
+        
+        // Cabeceras adaptadas a los campos de datosGU.js
+        let csv = "ID;Empresa;Tipo;Municipio;Direccion;CP;Trabajadores;CNAE;Sector\n";
+        
+        dataParaExportar.forEach(e => {
+            const tipoLimpio = normalizarTipo(e.tipo) === 'SI' ? 'Con Elecciones' : 'Blanca';
+            csv += `"${e.id || ''}";"${e.empresa || ''}";"${tipoLimpio}";"${e.municipio || ''}";"${e.direccion || ''}";"${e.cp || ''}";"${e.trabajadores || ''}";"${e.cnae || ''}";"${e.sector || ''}"\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", `Censo_Guadalajara_${new Date().toLocaleDateString()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     function abrirRuta(empresa, municipio, direccion, cp) {
-        // Corregido: Destino limpio para Google Maps
         const destinoFull = `${direccion}, ${cp} ${municipio}, Guadalajara, España`;
         const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinoFull)}&travelmode=driving`;
         window.open(url, '_blank');
@@ -92,21 +110,22 @@
         const blanca = data.filter(e => normalizarTipo(e.tipo) === 'BLANCA').length;
         
         statsBar.innerHTML = `
-            <div class="flex items-center gap-4">
-                <span class="text-[10px] font-bold text-slate-400 uppercase">Resumen:</span>
-                <div class="flex gap-3">
-                    <span class="text-[11px] font-bold text-slate-700">${total} <span class="font-medium text-slate-400">Total</span></span>
-                    <span class="text-[11px] font-bold text-si">${si} <span class="font-medium text-slate-400">SI</span></span>
-                    <span class="text-[11px] font-bold text-blanca">${blanca} <span class="font-medium text-slate-400">Blancas</span></span>
+            <div class="flex items-center gap-3">
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-bold text-slate-700">${total} <span class="text-slate-400 font-medium text-[9px]">TOTAL</span></span>
+                    <span class="text-[10px] font-bold text-si">${si} <span class="text-slate-400 font-medium text-[9px]">SI</span></span>
+                    <span class="text-[10px] font-bold text-blanca">${blanca} <span class="text-slate-400 font-medium text-[9px]">BLANCA</span></span>
                 </div>
             </div>
+            <button onclick="exportarCSV()" class="flex items-center gap-1 bg-emerald-600 text-white px-2.5 py-1 rounded-md font-black uppercase text-[9px] active:scale-95 transition-transform shadow-sm">
+                <span class="material-symbols-outlined text-[14px]">download</span> CSV
+            </button>
         `;
     }
 
     function render(query = '') {
-        // Verificación de base de datos
         if (typeof empresas === 'undefined') {
-            lista.innerHTML = '<div class="py-10 text-center text-slate-400 text-xs font-medium italic">Archivo datosGU.js no encontrado o vacío...</div>';
+            lista.innerHTML = '<div class="py-10 text-center text-slate-400 text-xs font-medium italic">Archivo datosGU.js no encontrado...</div>';
             return;
         }
 
@@ -115,7 +134,7 @@
             const matchQuery = (e.empresa || '').toLowerCase().includes(q) || 
                                (e.municipio || '').toLowerCase().includes(q) || 
                                (e.sector && e.sector.toLowerCase().includes(q)) ||
-                               (e.cif && e.cif.toLowerCase().includes(q));
+                               (e.cnae && e.cnae.toString().includes(q));
             
             const tipoEmpresa = normalizarTipo(e.tipo);
             const matchTipo = filtroTipo === 'TODAS' ? true : tipoEmpresa === filtroTipo;
@@ -123,6 +142,7 @@
             return matchQuery && matchTipo;
         });
 
+        dataParaExportar = filtrados;
         actualizarStats(filtrados);
 
         if (filtrados.length === 0) {
@@ -130,12 +150,9 @@
             return;
         }
 
-        // Renderizamos máximo 100 para no bloquear el móvil
         lista.innerHTML = filtrados.slice(0, 100).map(e => {
             const tipoE = normalizarTipo(e.tipo);
             const esSi = tipoE === 'SI';
-            
-            // Escapamos comillas simples para los eventos onclick
             const empresaEscapada = (e.empresa || '').replace(/'/g, "\\'");
             const direccionEscapada = (e.direccion || '').replace(/'/g, "\\'");
 
@@ -185,12 +202,10 @@
                         <span class="material-symbols-outlined text-sm">search</span> Más info
                     </button>
                 </div>
-            </div>
-            `;
+            </div>`;
         }).join('');
     }
 
-    // Eventos de Filtros
     filtrosBtn.forEach(btn => btn.addEventListener('click', () => {
         filtrosBtn.forEach(b => {
             b.className = "filter-btn whitespace-nowrap px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 text-[11px] font-bold transition-all";
@@ -202,7 +217,6 @@
 
     buscador.addEventListener('input', (e) => render(e.target.value));
 
-    // Carga inicial
     document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => render(), 300);
     });
