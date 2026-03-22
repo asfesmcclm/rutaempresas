@@ -1,0 +1,3960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#c0001e">
+  <title>Buscador CNAE 2025 · UGT CLM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #c0001e;
+      --red-light: #ff1a36;
+      --red-dim: rgba(192,0,30,0.12);
+      --fica-color: #16803c;
+      --fica-bg: #f0fdf4;
+      --fica-border: #bbf7d0;
+      --fesmc-color: #c0001e;
+      --fesmc-bg: #fff1f2;
+      --fesmc-border: #fecdd3;
+      --sp-color: #1d4ed8;
+      --sp-bg: #eff6ff;
+      --sp-border: #bfdbfe;
+      --mixed-color: #7c3aed;
+      --mixed-bg: #f5f3ff;
+      --mixed-border: #ddd6fe;
+      --bg: #f4f5f8;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-2: #475569;
+      --text-3: #94a3b8;
+      --border: #e2e8f0;
+      --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --font: 'Outfit', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      overscroll-behavior: none;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(160deg, #1a0005 0%, #3d0010 50%, #c0001e 100%);
+      padding: 52px 20px 28px;
+      padding-top: max(52px, calc(env(safe-area-inset-top) + 20px));
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 80% 0%, rgba(255,50,70,0.25) 0%, transparent 60%),
+                  radial-gradient(ellipse at 10% 100%, rgba(100,0,20,0.4) 0%, transparent 50%);
+    }
+    .header-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .logo-badge {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .header h1 {
+      font-size: clamp(26px, 7vw, 38px);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    .header h1 span {
+      color: rgba(255,180,170,0.9);
+    }
+    .header-sub {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── SEARCH ZONE ── */
+    .search-zone {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(to bottom, rgba(26,0,5,0.95) 0%, rgba(244,245,248,0.95) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 14px 16px 12px;
+    }
+    .search-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      overflow: hidden;
+    }
+    .search-box:focus-within {
+      border-color: var(--red);
+      box-shadow: 0 0 0 4px var(--red-dim), var(--shadow-lg);
+    }
+    .search-icon {
+      flex-shrink: 0;
+      width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-3);
+      transition: color 0.2s;
+    }
+    .search-box:focus-within .search-icon { color: var(--red); }
+    .search-icon svg { width: 20px; height: 20px; }
+    #input-busqueda {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+      background: transparent;
+      padding: 14px 0;
+      min-width: 0;
+    }
+    #input-busqueda::placeholder { color: var(--text-3); font-weight: 400; }
+    .clear-btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      margin-right: 4px;
+      border: none;
+      background: var(--bg);
+      border-radius: 10px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-2);
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    .clear-btn:active { background: var(--border); }
+    .clear-btn svg { width: 16px; height: 16px; }
+    .clear-btn.visible { display: flex; }
+
+    /* ── FILTERS ── */
+    .filters-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .filters-row::-webkit-scrollbar { display: none; }
+    .filter-pill {
+      flex-shrink: 0;
+      border: none;
+      border-radius: 50px;
+      padding: 7px 14px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+      background: rgba(255,255,255,0.85);
+      color: var(--text-2);
+      border: 1.5px solid var(--border);
+    }
+    .filter-pill.active-all {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text);
+    }
+    .filter-pill.active-fica {
+      background: var(--fica-color);
+      color: #fff;
+      border-color: var(--fica-color);
+    }
+    .filter-pill.active-fesmc {
+      background: var(--fesmc-color);
+      color: #fff;
+      border-color: var(--fesmc-color);
+    }
+    .filter-pill.active-sp {
+      background: var(--sp-color);
+      color: #fff;
+      border-color: var(--sp-color);
+    }
+    .filter-pill:active { transform: scale(0.95); }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px 16px 120px;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 4px;
+      margin-bottom: 8px;
+    }
+    .stats-count {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+    }
+    .stats-count strong { color: var(--text); }
+    .stats-hint {
+      font-size: 12px;
+      color: var(--text-3);
+      font-weight: 500;
+    }
+
+    /* ── CARDS ── */
+    .cnae-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .cnae-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: slideUp 0.22s ease forwards;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .cnae-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      border-radius: 4px 0 0 4px;
+    }
+    .cnae-card.type-fica::before { background: var(--fica-color); }
+    .cnae-card.type-fesmc::before { background: var(--fesmc-color); }
+    .cnae-card.type-sp::before { background: var(--sp-color); }
+    .cnae-card.type-mixed::before { background: linear-gradient(180deg, var(--fica-color), var(--fesmc-color), var(--sp-color)); }
+
+    .cnae-card:active {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px var(--red-dim);
+    }
+
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-code-block {
+      flex-shrink: 0;
+      width: 58px;
+      text-align: center;
+    }
+    .card-code {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      display: block;
+      line-height: 1;
+    }
+    .card-code-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 3px;
+      display: block;
+    }
+
+    .card-divider {
+      width: 1px;
+      align-self: stretch;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .card-body { flex: 1; min-width: 0; }
+    .card-name {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+    .card-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      border: 1.5px solid transparent;
+    }
+    .badge-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.6;
+    }
+    .badge.fica { background: var(--fica-bg); color: var(--fica-color); border-color: var(--fica-border); }
+    .badge.fesmc { background: var(--fesmc-bg); color: var(--fesmc-color); border-color: var(--fesmc-border); }
+    .badge.sp { background: var(--sp-bg); color: var(--sp-color); border-color: var(--sp-border); }
+
+    /* ── EMPTY / INITIAL STATE ── */
+    .state-box {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .state-icon {
+      width: 72px; height: 72px;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .state-icon.initial { background: rgba(192,0,30,0.08); }
+    .state-icon.empty { background: var(--bg); }
+    .state-icon svg { width: 36px; height: 36px; }
+    .state-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .state-text {
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.6;
+    }
+    .state-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .state-chip {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 50px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .state-chip:active { background: var(--red); color: #fff; border-color: var(--red); }
+
+    /* ── COPY TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #0f172a;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.25s;
+      z-index: 9999;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── FEDERATION SUMMARY ── */
+    .fed-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .fed-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      padding: 12px;
+      text-align: center;
+    }
+    .fed-card-num {
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    .fed-card-name {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .fed-card.fica .fed-card-num { color: var(--fica-color); }
+    .fed-card.fica .fed-card-name { color: var(--fica-color); opacity: 0.7; }
+    .fed-card.fesmc .fed-card-num { color: var(--fesmc-color); }
+    .fed-card.fesmc .fed-card-name { color: var(--fesmc-color); opacity: 0.7; }
+    .fed-card.sp .fed-card-num { color: var(--sp-color); }
+    .fed-card.sp .fed-card-name { color: var(--sp-color); opacity: 0.7; }
+
+    mark {
+      background: rgba(192, 0, 30, 0.15);
+      color: var(--red);
+      border-radius: 3px;
+      padding: 0 1px;
+    }
+
+    /* ── LOAD MORE ── */
+    .load-more-wrap {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .load-more-btn {
+      width: 100%;
+      max-width: 420px;
+      padding: 15px 24px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: border-color 0.18s, background 0.18s, color 0.18s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .load-more-btn:hover { border-color: var(--red); color: var(--red); }
+    .load-more-btn:active { transform: scale(0.97); background: var(--red-dim); }
+    .load-more-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .load-more-info {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <div class="logo-badge">FeSMC UGT Castilla-La Mancha</div>
+      </div>
+      <h1>Buscador<br><span>CNAE 2025</span></h1>
+      <p class="header-sub">Clasificación de actividades y federaciones</p>
+    </div>
+  </header>
+
+  <!-- SEARCH ZONE -->
+  <div class="search-zone">
+    <div class="search-wrap">
+      <div class="search-box">
+        <div class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <input type="search" id="input-busqueda" 
+          placeholder="Código o actividad..." 
+          autocomplete="off" autocorrect="off" spellcheck="false"
+          inputmode="search">
+        <button class="clear-btn" id="clear-btn" aria-label="Limpiar búsqueda">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="filters-row" id="filters-row">
+        <button class="filter-pill active-all" data-fed="todos">Todas</button>
+        <button class="filter-pill" data-fed="FESMC">● FESMC</button>
+        <button class="filter-pill" data-fed="FICA">● FICA</button>
+        <button class="filter-pill" data-fed="UGT-SP">● UGT-SP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content">
+    <div id="initial-state" class="state-box">
+      <div class="state-icon initial">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#c0001e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </div>
+      <p class="state-title">Busca tu actividad</p>
+      <p class="state-text">Introduce el código CNAE o<br>palabras clave de la actividad</p>
+      <div class="state-chips">
+        <div class="state-chip" onclick="setQuery('transporte')">Transporte</div>
+        <div class="state-chip" onclick="setQuery('comercio')">Comercio</div>
+        <div class="state-chip" onclick="setQuery('educación')">Educación</div>
+        <div class="state-chip" onclick="setQuery('alojamiento')">Alojamiento</div>
+        <div class="state-chip" onclick="setQuery('construcción')">Construcción</div>
+        <div class="state-chip" onclick="setQuery('asistencia')">Asistencia</div>
+      </div>
+      <div class="fed-summary" style="margin-top:28px;">
+        <div class="fed-card fesmc">
+          <div class="fed-card-num" id="count-fesmc">—</div>
+          <div class="fed-card-name">FESMC</div>
+        </div>
+        <div class="fed-card fica">
+          <div class="fed-card-num" id="count-fica">—</div>
+          <div class="fed-card-name">FICA</div>
+        </div>
+        <div class="fed-card sp">
+          <div class="fed-card-num" id="count-sp">—</div>
+          <div class="fed-card-name">UGT-SP</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="results-area" style="display:none;">
+      <div class="stats-bar">
+        <span class="stats-count" id="stats-count"></span>
+        <span class="stats-hint" id="stats-hint"></span>
+      </div>
+      <div class="cnae-list" id="lista-cnae"></div>
+      <div class="load-more-wrap" id="load-more-wrap" style="display:none;">
+        <button class="load-more-btn" id="load-more-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+          <span id="load-more-label">Cargar 80 más</span>
+        </button>
+        <span class="load-more-info" id="load-more-info"></span>
+      </div>
+    </div>
+
+    <div id="empty-state" class="state-box" style="display:none;">
+      <div class="state-icon empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+      </div>
+      <p class="state-title">Sin resultados</p>
+      <p class="state-text" id="empty-text">Prueba con términos más cortos<br>o cambia el filtro de federación</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">✓ Código copiado</div>
+
+  <script>
+const cnaeMaster = [
+  {
+    "c": "0111",
+    "n": "Cultivo de cereales (excepto arroz), leguminosas y semillas oleaginosas",
+    "f": "FICA"
+  },
+  {
+    "c": "0112",
+    "n": "Cultivo de arroz",
+    "f": "FICA"
+  },
+  {
+    "c": "0113",
+    "n": "Cultivo de hortalizas, raíces y tubérculos",
+    "f": "FICA"
+  },
+  {
+    "c": "0114",
+    "n": "Cultivo de caña de azúcar",
+    "f": "FICA"
+  },
+  {
+    "c": "0115",
+    "n": "Cultivo de tabaco",
+    "f": "FICA"
+  },
+  {
+    "c": "0116",
+    "n": "Cultivo de plantas para fibras textiles",
+    "f": "FICA"
+  },
+  {
+    "c": "0119",
+    "n": "Otros cultivos no perennes",
+    "f": "FICA"
+  },
+  {
+    "c": "0121",
+    "n": "Cultivo de la vid",
+    "f": "FICA"
+  },
+  {
+    "c": "0122",
+    "n": "Cultivo de frutos tropicales y subtropicales",
+    "f": "FICA"
+  },
+  {
+    "c": "0123",
+    "n": "Cultivo de cítricos",
+    "f": "FICA"
+  },
+  {
+    "c": "0124",
+    "n": "Cultivo de frutos con hueso y pepitas",
+    "f": "FICA"
+  },
+  {
+    "c": "0125",
+    "n": "Cultivo de otros árboles y arbustos frutales y frutos secos",
+    "f": "FICA"
+  },
+  {
+    "c": "0126",
+    "n": "Cultivo de frutos oleaginosos",
+    "f": "FICA"
+  },
+  {
+    "c": "0127",
+    "n": "Cultivo de plantas para bebidas",
+    "f": "FICA"
+  },
+  {
+    "c": "0128",
+    "n": "Cultivo de especias, plantas aromáticas, medicinales y farmacéuticas",
+    "f": "FICA"
+  },
+  {
+    "c": "0129",
+    "n": "Otros cultivos perennes",
+    "f": "FICA"
+  },
+  {
+    "c": "0130",
+    "n": "Propagación de plantas",
+    "f": "FICA"
+  },
+  {
+    "c": "0141",
+    "n": "Explotación de ganado bovino para la producción de leche",
+    "f": "FICA"
+  },
+  {
+    "c": "0142",
+    "n": "Explotación de otro ganado bovino y búfalos",
+    "f": "FICA"
+  },
+  {
+    "c": "0143",
+    "n": "Explotación de caballos y otros equinos",
+    "f": "FICA"
+  },
+  {
+    "c": "0144",
+    "n": "Explotación de camellos y otros camélidos",
+    "f": "FICA"
+  },
+  {
+    "c": "0145",
+    "n": "Explotación de ganado ovino y caprino",
+    "f": "FICA"
+  },
+  {
+    "c": "0146",
+    "n": "Explotación de ganado porcino",
+    "f": "FICA"
+  },
+  {
+    "c": "0147",
+    "n": "Avicultura",
+    "f": "FICA"
+  },
+  {
+    "c": "0149",
+    "n": "Otras explotaciones de ganado",
+    "f": "FICA"
+  },
+  {
+    "c": "0150",
+    "n": "Producción agrícola combinada con la producción ganadera",
+    "f": "FICA"
+  },
+  {
+    "c": "0161",
+    "n": "Actividades de apoyo a la agricultura",
+    "f": "FICA"
+  },
+  {
+    "c": "0162",
+    "n": "Actividades de apoyo a la ganadería",
+    "f": "FICA"
+  },
+  {
+    "c": "0163",
+    "n": "Actividades de preparación posterior a la cosecha",
+    "f": "FICA"
+  },
+  {
+    "c": "0164",
+    "n": "Tratamiento de semillas para reproducción",
+    "f": "FICA"
+  },
+  {
+    "c": "0170",
+    "n": "Caza, captura de animales y servicios relacionados con las mismas",
+    "f": "FICA"
+  },
+  {
+    "c": "0210",
+    "n": "Silvicultura y otras actividades forestales",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "0220",
+    "n": "Explotación de la madera",
+    "f": "FICA"
+  },
+  {
+    "c": "0230",
+    "n": "Recolección de productos silvestres, excepto madera",
+    "f": "FICA"
+  },
+  {
+    "c": "0240",
+    "n": "Servicios de apoyo a la silvicultura",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "0311",
+    "n": "Pesca marina",
+    "f": "FESMC"
+  },
+  {
+    "c": "0312",
+    "n": "Pesca en agua dulce",
+    "f": "FICA"
+  },
+  {
+    "c": "0321",
+    "n": "Acuicultura marina",
+    "f": "FICA"
+  },
+  {
+    "c": "0322",
+    "n": "Acuicultura en agua dulce",
+    "f": "FICA"
+  },
+  {
+    "c": "0510",
+    "n": "Extracción de antracita y hulla",
+    "f": "FICA"
+  },
+  {
+    "c": "0520",
+    "n": "Extracción de lignito",
+    "f": "FICA"
+  },
+  {
+    "c": "0610",
+    "n": "Extracción de crudo de petróleo",
+    "f": "FICA"
+  },
+  {
+    "c": "0620",
+    "n": "Extracción de gas natural",
+    "f": "FICA"
+  },
+  {
+    "c": "0710",
+    "n": "Extracción de minerales de hierro",
+    "f": "FICA"
+  },
+  {
+    "c": "0721",
+    "n": "Extracción de minerales de uranio y torio",
+    "f": "FICA"
+  },
+  {
+    "c": "0729",
+    "n": "Extracción de otros minerales metálicos no férreos",
+    "f": "FICA"
+  },
+  {
+    "c": "0811",
+    "n": "Extracción de piedra ornamental y para la construcción, piedra caliza, yeso, creta y pizarra",
+    "f": "FICA"
+  },
+  {
+    "c": "0812",
+    "n": "Extracción de gravas y arenas; extracción de arcilla y caolín",
+    "f": "FICA"
+  },
+  {
+    "c": "0891",
+    "n": "Extracción de minerales para productos químicos y fertilizantes",
+    "f": "FICA"
+  },
+  {
+    "c": "0892",
+    "n": "Extracción de turba",
+    "f": "FICA"
+  },
+  {
+    "c": "0893",
+    "n": "Extracción de sal",
+    "f": "FICA"
+  },
+  {
+    "c": "0899",
+    "n": "Otras industrias extractivas n.c.o.p",
+    "f": "FICA"
+  },
+  {
+    "c": "0910",
+    "n": "Actividades de apoyo a la extracción de petróleo y gas natural",
+    "f": "FICA"
+  },
+  {
+    "c": "0990",
+    "n": "Actividades de apoyo a otras industrias extractivas",
+    "f": "FICA"
+  },
+  {
+    "c": "1011",
+    "n": "Procesado y conservación de carne",
+    "f": "FICA"
+  },
+  {
+    "c": "1012",
+    "n": "Procesado y conservación de volatería",
+    "f": "FICA"
+  },
+  {
+    "c": "1013",
+    "n": "Elaboración de productos cárnicos y de volatería",
+    "f": "FICA"
+  },
+  {
+    "c": "1021",
+    "n": "Procesado de pescados, crustáceos y moluscos",
+    "f": "FICA"
+  },
+  {
+    "c": "1022",
+    "n": "Fabricación de conservas de pescado",
+    "f": "FICA"
+  },
+  {
+    "c": "1031",
+    "n": "Procesado y conservación de patatas",
+    "f": "FICA"
+  },
+  {
+    "c": "1032",
+    "n": "Elaboración de zumos de frutas y hortalizas",
+    "f": "FICA"
+  },
+  {
+    "c": "1039",
+    "n": "Otro procesado y conservación de frutas y hortalizas",
+    "f": "FICA"
+  },
+  {
+    "c": "1042",
+    "n": "Fabricación de margarina y grasas comestibles similares",
+    "f": "FICA"
+  },
+  {
+    "c": "1043",
+    "n": "Fabricación de aceite de oliva",
+    "f": "FICA"
+  },
+  {
+    "c": "1044",
+    "n": "Fabricación de otros aceites y grasas",
+    "f": "FICA"
+  },
+  {
+    "c": "1052",
+    "n": "Elaboración de helados",
+    "f": "FICA"
+  },
+  {
+    "c": "1053",
+    "n": "Fabricación de quesos",
+    "f": "FICA"
+  },
+  {
+    "c": "1054",
+    "n": "Preparación de leche y otros productos lácteos",
+    "f": "FICA"
+  },
+  {
+    "c": "1061",
+    "n": "Fabricación de productos de molinería",
+    "f": "FICA"
+  },
+  {
+    "c": "1062",
+    "n": "Fabricación de almidones y productos amiláceos",
+    "f": "FICA"
+  },
+  {
+    "c": "1071",
+    "n": "Fabricación de pan y de productos frescos de panadería y pastelería",
+    "f": "FICA"
+  },
+  {
+    "c": "1072",
+    "n": "Fabricación de galletas y productos de panadería y pastelería de larga duración",
+    "f": "FICA"
+  },
+  {
+    "c": "1073",
+    "n": "Fabricación de pastas alimenticias, cuscús y productos similares",
+    "f": "FICA"
+  },
+  {
+    "c": "1081",
+    "n": "Fabricación de azúcar",
+    "f": "FICA"
+  },
+  {
+    "c": "1082",
+    "n": "Fabricación de cacao, chocolate y productos de confitería",
+    "f": "FICA"
+  },
+  {
+    "c": "1083",
+    "n": "Elaboración de café, té e infusiones",
+    "f": "FICA"
+  },
+  {
+    "c": "1084",
+    "n": "Elaboración de especias, salsas y condimentos",
+    "f": "FICA"
+  },
+  {
+    "c": "1085",
+    "n": "Elaboración de platos y comidas preparados",
+    "f": "FICA"
+  },
+  {
+    "c": "1086",
+    "n": "Elaboración de preparados alimenticios homogeneizados y alimentos dietéticos",
+    "f": "FICA"
+  },
+  {
+    "c": "1089",
+    "n": "Elaboración de otros productos alimenticios n.c.o.p.",
+    "f": "FICA"
+  },
+  {
+    "c": "1091",
+    "n": "Fabricación de productos para la alimentación de animales de granja",
+    "f": "FICA"
+  },
+  {
+    "c": "1092",
+    "n": "Fabricación de productos para la alimentación de animales de compañía",
+    "f": "FICA"
+  },
+  {
+    "c": "1101",
+    "n": "Destilación, rectificación y mezcla de bebidas alcohólicas",
+    "f": "FICA"
+  },
+  {
+    "c": "1102",
+    "n": "Elaboración de vinos",
+    "f": "FICA"
+  },
+  {
+    "c": "1103",
+    "n": "Elaboración de sidra y otras bebidas fermentadas a partir de frutas",
+    "f": "FICA"
+  },
+  {
+    "c": "1104",
+    "n": "Elaboración de otras bebidas no destiladas, procedentes de la fermentación",
+    "f": "FICA"
+  },
+  {
+    "c": "1105",
+    "n": "Fabricación de cerveza",
+    "f": "FICA"
+  },
+  {
+    "c": "1106",
+    "n": "Fabricación de malta",
+    "f": "FICA"
+  },
+  {
+    "c": "1107",
+    "n": "Fabricación de bebidas no alcohólicas; producción de aguas minerales",
+    "f": "FICA"
+  },
+  {
+    "c": "1200",
+    "n": "Industria del tabaco",
+    "f": "FICA"
+  },
+  {
+    "c": "1310",
+    "n": "Preparación e hilado de fibras textiles",
+    "f": "FICA"
+  },
+  {
+    "c": "1320",
+    "n": "Fabricación de tejidos textiles",
+    "f": "FICA"
+  },
+  {
+    "c": "1330",
+    "n": "Acabado de textiles",
+    "f": "FICA"
+  },
+  {
+    "c": "1391",
+    "n": "Fabricación de tejidos de punto",
+    "f": "FICA"
+  },
+  {
+    "c": "1392",
+    "n": "Fabricación de artículos confeccionados con textiles",
+    "f": "FICA"
+  },
+  {
+    "c": "1393",
+    "n": "Fabricación de alfombras y moquetas",
+    "f": "FICA"
+  },
+  {
+    "c": "1394",
+    "n": "Fabricación de cuerdas, cordeles, bramantes y redes",
+    "f": "FICA"
+  },
+  {
+    "c": "1395",
+    "n": "Fabricación de telas no tejidas y artículos confeccionados con ellas",
+    "f": "FICA"
+  },
+  {
+    "c": "1396",
+    "n": "Fabricación de otros productos textiles de uso técnico e industrial",
+    "f": "FICA"
+  },
+  {
+    "c": "1399",
+    "n": "Fabricación de otros productos textiles n.c.o.p.",
+    "f": "FICA"
+  },
+  {
+    "c": "1411",
+    "n": "Confección de prendas de vestir de cuero",
+    "f": "FICA"
+  },
+  {
+    "c": "1412",
+    "n": "Confección de ropa de trabajo",
+    "f": "FICA"
+  },
+  {
+    "c": "1413",
+    "n": "Confección de otras prendas de vestir exteriores",
+    "f": "FICA"
+  },
+  {
+    "c": "1414",
+    "n": "Confección de ropa interior",
+    "f": "FICA"
+  },
+  {
+    "c": "1419",
+    "n": "Confección de otras prendas de vestir y accesorios",
+    "f": "FICA"
+  },
+  {
+    "c": "1420",
+    "n": "Fabricación de artículos de peletería",
+    "f": "FICA"
+  },
+  {
+    "c": "1431",
+    "n": "Confección de calcetería",
+    "f": "FICA"
+  },
+  {
+    "c": "1439",
+    "n": "Confección de otras prendas de vestir de punto",
+    "f": "FICA"
+  },
+  {
+    "c": "1511",
+    "n": "Preparación, curtido y acabado del cuero; teñido de pieles",
+    "f": "FICA"
+  },
+  {
+    "c": "1512",
+    "n": "Fabricación de artículos de marroquinería y viaje",
+    "f": "FICA"
+  },
+  {
+    "c": "1520",
+    "n": "Fabricación de calzado",
+    "f": "FICA"
+  },
+  {
+    "c": "1610",
+    "n": "Aserrado y cepillado de la madera",
+    "f": "FICA"
+  },
+  {
+    "c": "1621",
+    "n": "Fabricación de chapas y tableros de madera",
+    "f": "FICA"
+  },
+  {
+    "c": "1622",
+    "n": "Fabricación de suelos de madera ensamblados",
+    "f": "FICA"
+  },
+  {
+    "c": "1623",
+    "n": "Fabricación de otras estructuras de madera para la construcción",
+    "f": "FICA"
+  },
+  {
+    "c": "1624",
+    "n": "Fabricación de envases y embalajes de madera",
+    "f": "FICA"
+  },
+  {
+    "c": "1629",
+    "n": "Fabricación de otros productos de madera y corcho",
+    "f": "FICA"
+  },
+  {
+    "c": "1711",
+    "n": "Fabricación de pasta papelera",
+    "f": "FICA"
+  },
+  {
+    "c": "1712",
+    "n": "Fabricación de papel y cartón",
+    "f": "FICA"
+  },
+  {
+    "c": "1721",
+    "n": "Fabricación de papel y cartón ondulados y envases",
+    "f": "FICA"
+  },
+  {
+    "c": "1722",
+    "n": "Fabricación de artículos de papel para uso doméstico y sanitario",
+    "f": "FICA"
+  },
+  {
+    "c": "1723",
+    "n": "Fabricación de artículos de papelería",
+    "f": "FICA"
+  },
+  {
+    "c": "1724",
+    "n": "Fabricación de papeles pintados",
+    "f": "FICA"
+  },
+  {
+    "c": "1729",
+    "n": "Fabricación de otros artículos de papel y cartón",
+    "f": "FICA"
+  },
+  {
+    "c": "1811",
+    "n": "Impresión de periódicos",
+    "f": "FICA"
+  },
+  {
+    "c": "1812",
+    "n": "Otras actividades de impresión y artes gráficas",
+    "f": "FICA"
+  },
+  {
+    "c": "1813",
+    "n": "Servicios de preimpresión y preparación de soportes",
+    "f": "FICA"
+  },
+  {
+    "c": "1814",
+    "n": "Encuadernación y servicios relacionados",
+    "f": "FICA"
+  },
+  {
+    "c": "1820",
+    "n": "Reproducción de soportes grabados",
+    "f": "FESMC"
+  },
+  {
+    "c": "1910",
+    "n": "Coquerías",
+    "f": "FICA"
+  },
+  {
+    "c": "1920",
+    "n": "Refino de petróleo",
+    "f": "FICA"
+  },
+  {
+    "c": "2011",
+    "n": "Fabricación de gases industriales",
+    "f": "FICA"
+  },
+  {
+    "c": "2012",
+    "n": "Fabricación de colorantes y pigmentos",
+    "f": "FICA"
+  },
+  {
+    "c": "2013",
+    "n": "Fabricación de otros productos básicos de química inorgánica",
+    "f": "FICA"
+  },
+  {
+    "c": "2014",
+    "n": "Fabricación de otros productos básicos de química orgánica",
+    "f": "FICA"
+  },
+  {
+    "c": "2015",
+    "n": "Fabricación de fertilizantes y compuestos nitrogenados",
+    "f": "FICA"
+  },
+  {
+    "c": "2016",
+    "n": "Fabricación de plásticos en formas primarias",
+    "f": "FICA"
+  },
+  {
+    "c": "2017",
+    "n": "Fabricación de caucho sintético en formas primarias",
+    "f": "FICA"
+  },
+  {
+    "c": "2020",
+    "n": "Fabricación de pesticidas y otros productos agroquímicos",
+    "f": "FICA"
+  },
+  {
+    "c": "2030",
+    "n": "Fabricación de pinturas, barnices y tintas",
+    "f": "FICA"
+  },
+  {
+    "c": "2041",
+    "n": "Fabricación de jabones, detergentes y artículos de limpieza",
+    "f": "FICA"
+  },
+  {
+    "c": "2042",
+    "n": "Fabricación de perfumes y cosméticos",
+    "f": "FICA"
+  },
+  {
+    "c": "2051",
+    "n": "Fabricación de explosivos",
+    "f": "FICA"
+  },
+  {
+    "c": "2052",
+    "n": "Fabricación de colas",
+    "f": "FICA"
+  },
+  {
+    "c": "2053",
+    "n": "Fabricación de aceites esenciales",
+    "f": "FICA"
+  },
+  {
+    "c": "2059",
+    "n": "Fabricación de otros productos químicos n.c.o.p.",
+    "f": "FICA"
+  },
+  {
+    "c": "2060",
+    "n": "Fabricación de fibras artificiales y sintéticas",
+    "f": "FICA"
+  },
+  {
+    "c": "2110",
+    "n": "Fabricación de productos farmacéuticos de base",
+    "f": "FICA"
+  },
+  {
+    "c": "2120",
+    "n": "Fabricación de especialidades farmacéuticas",
+    "f": "FICA"
+  },
+  {
+    "c": "2211",
+    "n": "Fabricación de neumáticos y cámaras de caucho",
+    "f": "FICA"
+  },
+  {
+    "c": "2219",
+    "n": "Fabricación de otros productos de caucho",
+    "f": "FICA"
+  },
+  {
+    "c": "2221",
+    "n": "Fabricación de placas, hojas, tubos y perfiles de plástico",
+    "f": "FICA"
+  },
+  {
+    "c": "2222",
+    "n": "Fabricación de envases y embalajes de plástico",
+    "f": "FICA"
+  },
+  {
+    "c": "2223",
+    "n": "Fabricación de productos de plástico para la construcción",
+    "f": "FICA"
+  },
+  {
+    "c": "2229",
+    "n": "Fabricación de otros productos de plástico",
+    "f": "FICA"
+  },
+  {
+    "c": "2311",
+    "n": "Fabricación de vidrio plano",
+    "f": "FICA"
+  },
+  {
+    "c": "2312",
+    "n": "Manipulado y transformación de vidrio plano",
+    "f": "FICA"
+  },
+  {
+    "c": "2313",
+    "n": "Fabricación de vidrio hueco",
+    "f": "FICA"
+  },
+  {
+    "c": "2314",
+    "n": "Fabricación de fibra de vidrio",
+    "f": "FICA"
+  },
+  {
+    "c": "2319",
+    "n": "Fabricación y manipulado de otro vidrio",
+    "f": "FICA"
+  },
+  {
+    "c": "2320",
+    "n": "Fabricación de productos cerámicos refractarios",
+    "f": "FICA"
+  },
+  {
+    "c": "2331",
+    "n": "Fabricación de azulejos y baldosas de cerámica",
+    "f": "FICA"
+  },
+  {
+    "c": "2332",
+    "n": "Fabricación de ladrillos, tejas y productos de tierras cocidas",
+    "f": "FICA"
+  },
+  {
+    "c": "2341",
+    "n": "Fabricación de artículos cerámicos de uso doméstico",
+    "f": "FICA"
+  },
+  {
+    "c": "2342",
+    "n": "Fabricación de aparatos sanitarios cerámicos",
+    "f": "FICA"
+  },
+  {
+    "c": "2343",
+    "n": "Fabricación de aisladores y piezas aislantes cerámicas",
+    "f": "FICA"
+  },
+  {
+    "c": "2344",
+    "n": "Fabricación de otros productos cerámicos de uso técnico",
+    "f": "FICA"
+  },
+  {
+    "c": "2349",
+    "n": "Fabricación de otros productos cerámicos",
+    "f": "FICA"
+  },
+  {
+    "c": "2351",
+    "n": "Fabricación de cemento",
+    "f": "FICA"
+  },
+  {
+    "c": "2352",
+    "n": "Fabricación de cal y yeso",
+    "f": "FICA"
+  },
+  {
+    "c": "2361",
+    "n": "Fabricación de elementos de hormigón para la construcción",
+    "f": "FICA"
+  },
+  {
+    "c": "2362",
+    "n": "Fabricación de elementos de yeso para la construcción",
+    "f": "FICA"
+  },
+  {
+    "c": "2363",
+    "n": "Fabricación de hormigón fresco",
+    "f": "FICA"
+  },
+  {
+    "c": "2364",
+    "n": "Fabricación de mortero",
+    "f": "FICA"
+  },
+  {
+    "c": "2365",
+    "n": "Fabricación de fibrocemento",
+    "f": "FICA"
+  },
+  {
+    "c": "2369",
+    "n": "Fabricación de otros productos de hormigón, yeso y cemento",
+    "f": "FICA"
+  },
+  {
+    "c": "2370",
+    "n": "Corte, tallado y acabado de la piedra",
+    "f": "FICA"
+  },
+  {
+    "c": "2391",
+    "n": "Fabricación de otros productos minerales no metálicos n.c.o.p.",
+    "f": "FICA"
+  },
+  {
+    "c": "2410",
+    "n": "Fabricación de productos básicos de hierro y acero",
+    "f": "FICA"
+  },
+  {
+    "c": "2420",
+    "n": "Fabricación de tubos y tuberías de acero",
+    "f": "FICA"
+  },
+  {
+    "c": "2431",
+    "n": "Estirado en frío",
+    "f": "FICA"
+  },
+  {
+    "c": "2432",
+    "n": "Laminación en frío",
+    "f": "FICA"
+  },
+  {
+    "c": "2433",
+    "n": "Producción de perfiles en frío por conformación",
+    "f": "FICA"
+  },
+  {
+    "c": "2434",
+    "n": "Trefilado en frío",
+    "f": "FICA"
+  },
+  {
+    "c": "2441",
+    "n": "Producción de metales preciosos",
+    "f": "FICA"
+  },
+  {
+    "c": "2442",
+    "n": "Producción de aluminio",
+    "f": "FICA"
+  },
+  {
+    "c": "2443",
+    "n": "Producción de plomo, zinc y estaño",
+    "f": "FICA"
+  },
+  {
+    "c": "2444",
+    "n": "Producción de cobre",
+    "f": "FICA"
+  },
+  {
+    "c": "2445",
+    "n": "Producción de otros metales no férreos",
+    "f": "FICA"
+  },
+  {
+    "c": "2446",
+    "n": "Procesamiento de combustibles nucleares",
+    "f": "FICA"
+  },
+  {
+    "c": "2451",
+    "n": "Fundición de hierro",
+    "f": "FICA"
+  },
+  {
+    "c": "2452",
+    "n": "Fundición de acero",
+    "f": "FICA"
+  },
+  {
+    "c": "2453",
+    "n": "Fundición de metales ligeros",
+    "f": "FICA"
+  },
+  {
+    "c": "2454",
+    "n": "Fundición de otros metales no férreos",
+    "f": "FICA"
+  },
+  {
+    "c": "2511",
+    "n": "Fabricación de estructuras metálicas",
+    "f": "FICA"
+  },
+  {
+    "c": "2512",
+    "n": "Fabricación de carpintería metálica",
+    "f": "FICA"
+  },
+  {
+    "c": "2521",
+    "n": "Fabricación de radiadores y calderas de calefacción",
+    "f": "FICA"
+  },
+  {
+    "c": "2529",
+    "n": "Fabricación de cisternas y depósitos metálicos",
+    "f": "FICA"
+  },
+  {
+    "c": "2530",
+    "n": "Fabricación de generadores de vapor",
+    "f": "FICA"
+  },
+  {
+    "c": "2540",
+    "n": "Fabricación de armas y municiones",
+    "f": "FICA"
+  },
+  {
+    "c": "2550",
+    "n": "Forja, estampación y embutición de metales",
+    "f": "FICA"
+  },
+  {
+    "c": "2561",
+    "n": "Tratamiento y revestimiento de metales",
+    "f": "FICA"
+  },
+  {
+    "c": "2562",
+    "n": "Ingeniería mecánica por cuenta de terceros",
+    "f": "FICA"
+  },
+  {
+    "c": "2571",
+    "n": "Fabricación de artículos de cuchillería y cubertería",
+    "f": "FICA"
+  },
+  {
+    "c": "2572",
+    "n": "Fabricación de cerraduras y herrajes",
+    "f": "FICA"
+  },
+  {
+    "c": "2573",
+    "n": "Fabricación de herramientas",
+    "f": "FICA"
+  },
+  {
+    "c": "2591",
+    "n": "Fabricación de bidones y toneles de hierro o acero",
+    "f": "FICA"
+  },
+  {
+    "c": "2592",
+    "n": "Fabricación de envases metálicos ligeros",
+    "f": "FICA"
+  },
+  {
+    "c": "2593",
+    "n": "Fabricación de productos de alambre, cadenas y muelles",
+    "f": "FICA"
+  },
+  {
+    "c": "2594",
+    "n": "Fabricación de pernos y productos de tornillería",
+    "f": "FICA"
+  },
+  {
+    "c": "2599",
+    "n": "Fabricación de otros productos metálicos n.c.o.p.",
+    "f": "FICA"
+  },
+  {
+    "c": "2611",
+    "n": "Fabricación de componentes electrónicos",
+    "f": "FICA"
+  },
+  {
+    "c": "2612",
+    "n": "Fabricación de circuitos impresos ensamblados",
+    "f": "FICA"
+  },
+  {
+    "c": "2620",
+    "n": "Fabricación de ordenadores y equipos periféricos",
+    "f": "FICA"
+  },
+  {
+    "c": "2630",
+    "n": "Fabricación de equipos de telecomunicaciones",
+    "f": "FICA"
+  },
+  {
+    "c": "2640",
+    "n": "Fabricación de productos electrónicos de consumo",
+    "f": "FICA"
+  },
+  {
+    "c": "2651",
+    "n": "Fabricación de instrumentos de medida y navegación",
+    "f": "FICA"
+  },
+  {
+    "c": "2652",
+    "n": "Fabricación de relojes",
+    "f": "FICA"
+  },
+  {
+    "c": "2660",
+    "n": "Fabricación de equipos electromédicos",
+    "f": "FICA"
+  },
+  {
+    "c": "2670",
+    "n": "Fabricación de instrumentos ópticos y fotográficos",
+    "f": "FICA"
+  },
+  {
+    "c": "2680",
+    "n": "Fabricación de soportes magnéticos y ópticos",
+    "f": "FICA"
+  },
+  {
+    "c": "2711",
+    "n": "Fabricación de motores, generadores y transformadores",
+    "f": "FICA"
+  },
+  {
+    "c": "2712",
+    "n": "Fabricación de aparatos de distribución eléctrica",
+    "f": "FICA"
+  },
+  {
+    "c": "2720",
+    "n": "Fabricación de pilas y acumuladores eléctricos",
+    "f": "FICA"
+  },
+  {
+    "c": "2731",
+    "n": "Fabricación de cables de fibra óptica",
+    "f": "FICA"
+  },
+  {
+    "c": "2732",
+    "n": "Fabricación de otros hilos y cables eléctricos",
+    "f": "FICA"
+  },
+  {
+    "c": "2733",
+    "n": "Fabricación de dispositivos de cableado",
+    "f": "FICA"
+  },
+  {
+    "c": "2740",
+    "n": "Fabricación de lámparas y aparatos de iluminación",
+    "f": "FICA"
+  },
+  {
+    "c": "2751",
+    "n": "Fabricación de electrodomésticos",
+    "f": "FICA"
+  },
+  {
+    "c": "2752",
+    "n": "Fabricación de aparatos domésticos no eléctricos",
+    "f": "FICA"
+  },
+  {
+    "c": "2790",
+    "n": "Fabricación de otro material y equipo eléctrico",
+    "f": "FICA"
+  },
+  {
+    "c": "2811",
+    "n": "Fabricación de motores y turbinas (excepto vehículos)",
+    "f": "FICA"
+  },
+  {
+    "c": "2812",
+    "n": "Fabricación de equipos de transmisión hidráulica",
+    "f": "FICA"
+  },
+  {
+    "c": "2813",
+    "n": "Fabricación de otras bombas y compresores",
+    "f": "FICA"
+  },
+  {
+    "c": "2814",
+    "n": "Fabricación de otra grifería y válvulas",
+    "f": "FICA"
+  },
+  {
+    "c": "2815",
+    "n": "Fabricación de cojinetes y engranajes",
+    "f": "FICA"
+  },
+  {
+    "c": "2821",
+    "n": "Fabricación de hornos y quemadores",
+    "f": "FICA"
+  },
+  {
+    "c": "2822",
+    "n": "Fabricación de maquinaria de elevación",
+    "f": "FICA"
+  },
+  {
+    "c": "2823",
+    "n": "Fabricación de máquinas de oficina (excepto informática)",
+    "f": "FICA"
+  },
+  {
+    "c": "2824",
+    "n": "Fabricación de herramientas eléctricas manuales",
+    "f": "FICA"
+  },
+  {
+    "c": "2825",
+    "n": "Fabricación de maquinaria de ventilación no doméstica",
+    "f": "FICA"
+  },
+  {
+    "c": "2829",
+    "n": "Fabricación de otra maquinaria de uso general n.c.o.p.",
+    "f": "FICA"
+  },
+  {
+    "c": "2830",
+    "n": "Fabricación de maquinaria agraria y forestal",
+    "f": "FICA"
+  },
+  {
+    "c": "2841",
+    "n": "Fabricación de máquinas herramienta para metal",
+    "f": "FICA"
+  },
+  {
+    "c": "2849",
+    "n": "Fabricación de otras máquinas herramienta",
+    "f": "FICA"
+  },
+  {
+    "c": "2891",
+    "n": "Fabricación de maquinaria para la metalurgia",
+    "f": "FICA"
+  },
+  {
+    "c": "2892",
+    "n": "Fabricación de maquinaria para minería y construcción",
+    "f": "FICA"
+  },
+  {
+    "c": "2893",
+    "n": "Fabricación de maquinaria para alimentación y tabaco",
+    "f": "FICA"
+  },
+  {
+    "c": "2894",
+    "n": "Fabricación de maquinaria para textil y cuero",
+    "f": "FICA"
+  },
+  {
+    "c": "2895",
+    "n": "Fabricación de maquinaria para papel y cartón",
+    "f": "FICA"
+  },
+  {
+    "c": "2896",
+    "n": "Fabricación de maquinaria para plástico y caucho",
+    "f": "FICA"
+  },
+  {
+    "c": "2899",
+    "n": "Fabricación de otra maquinaria para usos específicos",
+    "f": "FICA"
+  },
+  {
+    "c": "2910",
+    "n": "Fabricación de vehículos de motor",
+    "f": "FICA"
+  },
+  {
+    "c": "2920",
+    "n": "Fabricación de carrocerías, remolques y semirremolques",
+    "f": "FICA"
+  },
+  {
+    "c": "2931",
+    "n": "Fabricación de equipos eléctricos para vehículos",
+    "f": "FICA"
+  },
+  {
+    "c": "2932",
+    "n": "Fabricación de otros componentes para vehículos",
+    "f": "FICA"
+  },
+  {
+    "c": "3011",
+    "n": "Construcción de barcos y estructuras flotantes",
+    "f": "FICA"
+  },
+  {
+    "c": "3012",
+    "n": "Construcción de embarcaciones de recreo y deporte",
+    "f": "FICA"
+  },
+  {
+    "c": "3020",
+    "n": "Fabricación de locomotoras y material ferroviario",
+    "f": "FICA"
+  },
+  {
+    "c": "3030",
+    "n": "Construcción aeronáutica y espacial",
+    "f": "FICA"
+  },
+  {
+    "c": "3040",
+    "n": "Fabricación de vehículos militares de combate",
+    "f": "FICA"
+  },
+  {
+    "c": "3091",
+    "n": "Fabricación de motocicletas",
+    "f": "FICA"
+  },
+  {
+    "c": "3092",
+    "n": "Fabricación de bicicletas y vehículos para discapacidad",
+    "f": "FICA"
+  },
+  {
+    "c": "3099",
+    "n": "Fabricación de otro material de transporte n.c.o.p.",
+    "f": "FICA"
+  },
+  {
+    "c": "3101",
+    "n": "Fabricación de muebles de oficina y comerciales",
+    "f": "FICA"
+  },
+  {
+    "c": "3102",
+    "n": "Fabricación de muebles de cocina",
+    "f": "FICA"
+  },
+  {
+    "c": "3103",
+    "n": "Fabricación de colchones",
+    "f": "FICA"
+  },
+  {
+    "c": "3109",
+    "n": "Fabricación de otros muebles",
+    "f": "FICA"
+  },
+  {
+    "c": "3211",
+    "n": "Fabricación de monedas",
+    "f": "FICA"
+  },
+  {
+    "c": "3212",
+    "n": "Fabricación de artículos de joyería",
+    "f": "FICA"
+  },
+  {
+    "c": "3213",
+    "n": "Fabricación de artículos de bisutería",
+    "f": "FICA"
+  },
+  {
+    "c": "3220",
+    "n": "Fabricación de instrumentos musicales",
+    "f": "FICA"
+  },
+  {
+    "c": "3230",
+    "n": "Fabricación de artículos de deporte",
+    "f": "FICA"
+  },
+  {
+    "c": "3240",
+    "n": "Fabricación de juegos y juguetes",
+    "f": "FICA"
+  },
+  {
+    "c": "3250",
+    "n": "Fabricación de instrumentos médicos y odontológicos",
+    "f": "FICA"
+  },
+  {
+    "c": "3291",
+    "n": "Fabricación de escobas, brochas y cepillos",
+    "f": "FICA"
+  },
+  {
+    "c": "3299",
+    "n": "Otras industrias manufactureras n.c.o.p.",
+    "f": "FICA"
+  },
+  {
+    "c": "3311",
+    "n": "Reparación de productos metálicos",
+    "f": "FICA"
+  },
+  {
+    "c": "3312",
+    "n": "Reparación de maquinaria",
+    "f": "FICA"
+  },
+  {
+    "c": "3313",
+    "n": "Reparación de equipos electrónicos y ópticos",
+    "f": "FICA"
+  },
+  {
+    "c": "3314",
+    "n": "Reparación de equipos eléctricos",
+    "f": "FICA"
+  },
+  {
+    "c": "3315",
+    "n": "Reparación y mantenimiento naval",
+    "f": "FICA"
+  },
+  {
+    "c": "3316",
+    "n": "Reparación y mantenimiento aeronáutico",
+    "f": "FICA"
+  },
+  {
+    "c": "3317",
+    "n": "Reparación y mantenimiento de otro material de transporte",
+    "f": "FICA"
+  },
+  {
+    "c": "3319",
+    "n": "Reparación de otros equipos",
+    "f": "FICA"
+  },
+  {
+    "c": "3320",
+    "n": "Instalación de máquinas y equipos industriales",
+    "f": "FICA"
+  },
+  {
+    "c": "3512",
+    "n": "Transporte de energía eléctrica",
+    "f": "FICA"
+  },
+  {
+    "c": "3513",
+    "n": "Distribución de energía eléctrica",
+    "f": "FICA"
+  },
+  {
+    "c": "3514",
+    "n": "Comercio de energía eléctrica",
+    "f": "FICA"
+  },
+  {
+    "c": "3515",
+    "n": "Producción de energía hidroeléctrica",
+    "f": "FICA"
+  },
+  {
+    "c": "3516",
+    "n": "Producción de energía eléctrica térmica convencional",
+    "f": "FICA"
+  },
+  {
+    "c": "3517",
+    "n": "Producción de energía eléctrica nuclear",
+    "f": "FICA"
+  },
+  {
+    "c": "3518",
+    "n": "Producción de energía eléctrica eólica",
+    "f": "FICA"
+  },
+  {
+    "c": "3519",
+    "n": "Producción de energía eléctrica de otros tipos",
+    "f": "FICA"
+  },
+  {
+    "c": "3521",
+    "n": "Producción de gas",
+    "f": "FICA"
+  },
+  {
+    "c": "3522",
+    "n": "Distribución por tubería de combustibles gaseosos",
+    "f": "FICA"
+  },
+  {
+    "c": "3523",
+    "n": "Comercio de gas por tubería",
+    "f": "FICA"
+  },
+  {
+    "c": "3530",
+    "n": "Suministro de vapor y aire acondicionado",
+    "f": "FICA"
+  },
+  {
+    "c": "3600",
+    "n": "Captación, depuración y distribución de agua",
+    "f": "FICA / UGT-SP"
+  },
+  {
+    "c": "3700",
+    "n": "Recogida y tratamiento de aguas residuales",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "3811",
+    "n": "Recogida de residuos no peligrosos",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "3812",
+    "n": "Recogida de residuos peligrosos",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "3821",
+    "n": "Tratamiento de residuos no peligrosos",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "3822",
+    "n": "Tratamiento y eliminación de residuos peligrosos",
+    "f": "FICA"
+  },
+  {
+    "c": "3831",
+    "n": "Separación y clasificación de materiales",
+    "f": "FICA"
+  },
+  {
+    "c": "3832",
+    "n": "Valorización de materiales ya clasificados",
+    "f": "FICA / FESMC"
+  },
+  {
+    "c": "3900",
+    "n": "Actividades de descontaminación y gestión de residuos",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "4110",
+    "n": "Promoción inmobiliaria",
+    "f": "FESMC"
+  },
+  {
+    "c": "4121",
+    "n": "Construcción de edificios residenciales",
+    "f": "FICA"
+  },
+  {
+    "c": "4122",
+    "n": "Construcción de edificios no residenciales",
+    "f": "FICA"
+  },
+  {
+    "c": "4211",
+    "n": "Construcción de carreteras y autopistas",
+    "f": "FICA"
+  },
+  {
+    "c": "4212",
+    "n": "Construcción de vías férreas",
+    "f": "FICA"
+  },
+  {
+    "c": "4213",
+    "n": "Construcción de puentes y túneles",
+    "f": "FICA"
+  },
+  {
+    "c": "4221",
+    "n": "Construcción de redes para fluidos",
+    "f": "FICA"
+  },
+  {
+    "c": "4222",
+    "n": "Redes eléctricas y de telecomunicaciones",
+    "f": "FICA"
+  },
+  {
+    "c": "4291",
+    "n": "Obras hidráulicas",
+    "f": "FICA"
+  },
+  {
+    "c": "4299",
+    "n": "Construcción de otros proyectos de ingeniería civil",
+    "f": "FICA"
+  },
+  {
+    "c": "4311",
+    "n": "Demolición",
+    "f": "FICA"
+  },
+  {
+    "c": "4312",
+    "n": "Preparación de terrenos",
+    "f": "FICA"
+  },
+  {
+    "c": "4313",
+    "n": "Perforaciones y sondeos",
+    "f": "FICA"
+  },
+  {
+    "c": "4321",
+    "n": "Instalaciones eléctricas",
+    "f": "FICA"
+  },
+  {
+    "c": "4322",
+    "n": "Fontanería y calefacción",
+    "f": "FICA"
+  },
+  {
+    "c": "4329",
+    "n": "Otras instalaciones en obras",
+    "f": "FICA"
+  },
+  {
+    "c": "4331",
+    "n": "Revocamiento",
+    "f": "FICA"
+  },
+  {
+    "c": "4332",
+    "n": "Instalación de carpintería",
+    "f": "FICA"
+  },
+  {
+    "c": "4333",
+    "n": "Revestimiento de suelos y paredes",
+    "f": "FICA"
+  },
+  {
+    "c": "4334",
+    "n": "Pintura y acristalamiento",
+    "f": "FICA"
+  },
+  {
+    "c": "4339",
+    "n": "Otro acabado de edificios",
+    "f": "FICA"
+  },
+  {
+    "c": "4391",
+    "n": "Construcción de cubiertas",
+    "f": "FICA"
+  },
+  {
+    "c": "4399",
+    "n": "Otras actividades de construcción especializada n.c.o.p.",
+    "f": "FICA"
+  },
+  {
+    "c": "4511",
+    "n": "Venta de automóviles y vehículos ligeros",
+    "f": "FESMC"
+  },
+  {
+    "c": "4519",
+    "n": "Venta de otros vehículos de motor",
+    "f": "FESMC"
+  },
+  {
+    "c": "4520",
+    "n": "Mantenimiento y reparación de vehículos de motor",
+    "f": "FICA"
+  },
+  {
+    "c": "4531",
+    "n": "Comercio al por mayor de repuestos de vehículos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4532",
+    "n": "Comercio al por menor de repuestos de vehículos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4540",
+    "n": "Venta y reparación de motocicletas",
+    "f": "FICA / FESMC"
+  },
+  {
+    "c": "4611",
+    "n": "Intermediarios del comercio de materias primas agrarias",
+    "f": "FESMC"
+  },
+  {
+    "c": "4612",
+    "n": "Intermediarios del comercio de combustibles y metales",
+    "f": "FESMC"
+  },
+  {
+    "c": "4613",
+    "n": "Intermediarios del comercio de madera y construcción",
+    "f": "FESMC"
+  },
+  {
+    "c": "4614",
+    "n": "Intermediarios de maquinaria y aeronaves",
+    "f": "FESMC"
+  },
+  {
+    "c": "4615",
+    "n": "Intermediarios de muebles y ferretería",
+    "f": "FESMC"
+  },
+  {
+    "c": "4616",
+    "n": "Intermediarios de textiles, calzado y cuero",
+    "f": "FESMC"
+  },
+  {
+    "c": "4617",
+    "n": "Intermediarios de alimentación, bebidas y tabaco",
+    "f": "FESMC"
+  },
+  {
+    "c": "4618",
+    "n": "Intermediarios especializados en otros productos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4619",
+    "n": "Intermediarios del comercio de productos diversos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4621",
+    "n": "Comercio al por mayor de cereales y tabaco en rama",
+    "f": "FESMC"
+  },
+  {
+    "c": "4622",
+    "n": "Comercio al por mayor de flores y plantas",
+    "f": "FESMC"
+  },
+  {
+    "c": "4623",
+    "n": "Comercio al por mayor de animales vivos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4624",
+    "n": "Comercio al por mayor de cueros y pieles",
+    "f": "FESMC"
+  },
+  {
+    "c": "4631",
+    "n": "Comercio al por mayor de frutas y hortalizas",
+    "f": "FESMC"
+  },
+  {
+    "c": "4632",
+    "n": "Comercio al por mayor de carne",
+    "f": "FESMC"
+  },
+  {
+    "c": "4633",
+    "n": "Comercio al por mayor de lácteos, huevos y aceites",
+    "f": "FESMC"
+  },
+  {
+    "c": "4634",
+    "n": "Comercio al por mayor de bebidas",
+    "f": "FESMC"
+  },
+  {
+    "c": "4635",
+    "n": "Comercio al por mayor de productos del tabaco",
+    "f": "FESMC"
+  },
+  {
+    "c": "4636",
+    "n": "Comercio al por mayor de azúcar y chocolate",
+    "f": "FESMC"
+  },
+  {
+    "c": "4637",
+    "n": "Comercio al por mayor de café, té y especias",
+    "f": "FESMC"
+  },
+  {
+    "c": "4638",
+    "n": "Comercio al por mayor de pescados y mariscos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4639",
+    "n": "Comercio al por mayor no especializado de alimentación",
+    "f": "FESMC"
+  },
+  {
+    "c": "4641",
+    "n": "Comercio al por mayor de textiles",
+    "f": "FESMC"
+  },
+  {
+    "c": "4642",
+    "n": "Comercio al por mayor de prendas de vestir y calzado",
+    "f": "FESMC"
+  },
+  {
+    "c": "4643",
+    "n": "Comercio al por mayor de electrodomésticos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4644",
+    "n": "Comercio al por mayor de porcelana y cristalería",
+    "f": "FESMC"
+  },
+  {
+    "c": "4645",
+    "n": "Comercio al por mayor de perfumería y cosmética",
+    "f": "FESMC"
+  },
+  {
+    "c": "4646",
+    "n": "Comercio al por mayor de productos farmacéuticos",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "4647",
+    "n": "Comercio al por mayor de muebles e iluminación",
+    "f": "FESMC"
+  },
+  {
+    "c": "4648",
+    "n": "Comercio al por mayor de artículos de relojería y joyería",
+    "f": "FESMC"
+  },
+  {
+    "c": "4649",
+    "n": "Comercio al por mayor de otros artículos domésticos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4651",
+    "n": "Comercio al por mayor de ordenadores y software",
+    "f": "FESMC"
+  },
+  {
+    "c": "4652",
+    "n": "Comercio al por mayor de equipos de telecomunicaciones",
+    "f": "FESMC"
+  },
+  {
+    "c": "4661",
+    "n": "Comercio al por mayor de maquinaria agrícola",
+    "f": "FESMC"
+  },
+  {
+    "c": "4662",
+    "n": "Comercio al por mayor de máquinas herramienta",
+    "f": "FESMC"
+  },
+  {
+    "c": "4663",
+    "n": "Comercio al por mayor de maquinaria para minería",
+    "f": "FESMC"
+  },
+  {
+    "c": "4664",
+    "n": "Comercio al por mayor de maquinaria textil",
+    "f": "FESMC"
+  },
+  {
+    "c": "4665",
+    "n": "Comercio al por mayor de muebles de oficina",
+    "f": "FESMC"
+  },
+  {
+    "c": "4666",
+    "n": "Comercio al por mayor de otra maquinaria de oficina",
+    "f": "FESMC"
+  },
+  {
+    "c": "4669",
+    "n": "Comercio al por mayor de otra maquinaria y equipo",
+    "f": "FESMC"
+  },
+  {
+    "c": "4671",
+    "n": "Comercio al por mayor de combustibles",
+    "f": "FICA"
+  },
+  {
+    "c": "4672",
+    "n": "Comercio al por mayor de metales y minerales",
+    "f": "FESMC"
+  },
+  {
+    "c": "4673",
+    "n": "Comercio al por mayor de madera y material construcción",
+    "f": "FESMC"
+  },
+  {
+    "c": "4674",
+    "n": "Comercio al por mayor de ferretería y calefacción",
+    "f": "FESMC"
+  },
+  {
+    "c": "4675",
+    "n": "Comercio al por mayor de productos químicos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4676",
+    "n": "Comercio al por mayor de otros productos semielaborados",
+    "f": "FESMC"
+  },
+  {
+    "c": "4677",
+    "n": "Comercio al por mayor de chatarra",
+    "f": "FESMC"
+  },
+  {
+    "c": "4690",
+    "n": "Comercio al por mayor no especializado",
+    "f": "FESMC"
+  },
+  {
+    "c": "4711",
+    "n": "Comercio al por menor en establecimientos no especializados",
+    "f": "FESMC"
+  },
+  {
+    "c": "4719",
+    "n": "Otro comercio al por menor en establecimientos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4721",
+    "n": "Comercio al por menor de frutas y hortalizas",
+    "f": "FESMC"
+  },
+  {
+    "c": "4722",
+    "n": "Comercio al por menor de carne",
+    "f": "FESMC"
+  },
+  {
+    "c": "4723",
+    "n": "Comercio al por menor de pescados y mariscos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4724",
+    "n": "Comercio al por menor de pan y confitería",
+    "f": "FESMC"
+  },
+  {
+    "c": "4725",
+    "n": "Comercio al por menor de bebidas",
+    "f": "FESMC"
+  },
+  {
+    "c": "4726",
+    "n": "Comercio al por menor de tabaco",
+    "f": "FESMC"
+  },
+  {
+    "c": "4729",
+    "n": "Otro comercio al por menor de alimentación",
+    "f": "FESMC"
+  },
+  {
+    "c": "4730",
+    "n": "Comercio al por menor de combustible para automoción",
+    "f": "FICA"
+  },
+  {
+    "c": "4741",
+    "n": "Comercio al por menor de ordenadores y programas",
+    "f": "FESMC"
+  },
+  {
+    "c": "4742",
+    "n": "Comercio al por menor de equipos telecomunicaciones",
+    "f": "FESMC"
+  },
+  {
+    "c": "4743",
+    "n": "Comercio al por menor de equipos de audio y vídeo",
+    "f": "FESMC"
+  },
+  {
+    "c": "4751",
+    "n": "Comercio al por menor de textiles",
+    "f": "FESMC"
+  },
+  {
+    "c": "4752",
+    "n": "Comercio al por menor de ferretería y vidrio",
+    "f": "FESMC"
+  },
+  {
+    "c": "4753",
+    "n": "Comercio al por menor de alfombras y revestimientos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4754",
+    "n": "Comercio al por menor de electrodomésticos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4759",
+    "n": "Comercio al por menor de muebles e iluminación",
+    "f": "FESMC"
+  },
+  {
+    "c": "4761",
+    "n": "Comercio al por menor de libros",
+    "f": "FESMC"
+  },
+  {
+    "c": "4762",
+    "n": "Comercio al por menor de periódicos y papelería",
+    "f": "FESMC"
+  },
+  {
+    "c": "4763",
+    "n": "Comercio al por menor de grabaciones de música y vídeo",
+    "f": "FESMC"
+  },
+  {
+    "c": "4764",
+    "n": "Comercio al por menor de artículos deportivos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4765",
+    "n": "Comercio al por menor de juegos y juguetes",
+    "f": "FESMC"
+  },
+  {
+    "c": "4771",
+    "n": "Comercio al por menor de prendas de vestir",
+    "f": "FESMC"
+  },
+  {
+    "c": "4772",
+    "n": "Comercio al por menor de calzado y artículos de cuero",
+    "f": "FESMC"
+  },
+  {
+    "c": "4773",
+    "n": "Comercio al por menor de productos farmacéuticos",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "4774",
+    "n": "Comercio al por menor de artículos médicos y ortopédicos",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "4775",
+    "n": "Comercio al por menor de productos cosméticos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4776",
+    "n": "Comercio al por menor de flores y mascotas",
+    "f": "FESMC"
+  },
+  {
+    "c": "4777",
+    "n": "Comercio al por menor de relojería y joyería",
+    "f": "FESMC"
+  },
+  {
+    "c": "4778",
+    "n": "Otro comercio al por menor de artículos nuevos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4779",
+    "n": "Comercio al por menor de artículos de segunda mano",
+    "f": "FESMC"
+  },
+  {
+    "c": "4781",
+    "n": "Comercio al por menor de alimentación en mercadillos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4782",
+    "n": "Comercio al por menor de textiles en mercadillos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4789",
+    "n": "Comercio al por menor de otros productos en mercadillos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4791",
+    "n": "Comercio al por menor por Internet",
+    "f": "FESMC"
+  },
+  {
+    "c": "4799",
+    "n": "Otro comercio al por menor no realizado en establecimientos",
+    "f": "FESMC"
+  },
+  {
+    "c": "4910",
+    "n": "Transporte interurbano de pasajeros por ferrocarril",
+    "f": "FESMC"
+  },
+  {
+    "c": "4920",
+    "n": "Transporte de mercancías por ferrocarril",
+    "f": "FESMC"
+  },
+  {
+    "c": "4931",
+    "n": "Transporte terrestre urbano de pasajeros",
+    "f": "FESMC"
+  },
+  {
+    "c": "4932",
+    "n": "Transporte por taxi",
+    "f": "FESMC"
+  },
+  {
+    "c": "4939",
+    "n": "Otros tipos de transporte terrestre de pasajeros n.c.o.p.",
+    "f": "FESMC"
+  },
+  {
+    "c": "4941",
+    "n": "Transporte de mercancías por carretera",
+    "f": "FESMC"
+  },
+  {
+    "c": "4942",
+    "n": "Servicios de mudanza",
+    "f": "FESMC"
+  },
+  {
+    "c": "4950",
+    "n": "Transporte por tubería",
+    "f": "FICA"
+  },
+  {
+    "c": "5010",
+    "n": "Transporte marítimo de pasajeros",
+    "f": "FESMC"
+  },
+  {
+    "c": "5020",
+    "n": "Transporte marítimo de mercancías",
+    "f": "FESMC"
+  },
+  {
+    "c": "5030",
+    "n": "Transporte de pasajeros por vías navegables interiores",
+    "f": "FESMC"
+  },
+  {
+    "c": "5040",
+    "n": "Transporte de mercancías por vías navegables interiores",
+    "f": "FESMC"
+  },
+  {
+    "c": "5110",
+    "n": "Transporte aéreo de pasajeros",
+    "f": "FESMC"
+  },
+  {
+    "c": "5121",
+    "n": "Transporte aéreo de mercancías",
+    "f": "FESMC"
+  },
+  {
+    "c": "5122",
+    "n": "Transporte espacial",
+    "f": "FESMC"
+  },
+  {
+    "c": "5210",
+    "n": "Depósito y almacenamiento",
+    "f": "FESMC"
+  },
+  {
+    "c": "5221",
+    "n": "Actividades anexas al transporte terrestre",
+    "f": "FICA / FESMC"
+  },
+  {
+    "c": "5222",
+    "n": "Actividades anexas al transporte marítimo",
+    "f": "FESMC"
+  },
+  {
+    "c": "5223",
+    "n": "Actividades anexas al transporte aéreo",
+    "f": "FESMC / UGT-SP"
+  },
+  {
+    "c": "5224",
+    "n": "Manipulación de mercancías",
+    "f": "FESMC"
+  },
+  {
+    "c": "5229",
+    "n": "Otras actividades anexas al transporte",
+    "f": "FESMC"
+  },
+  {
+    "c": "5310",
+    "n": "Actividades postales (servicio universal)",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "5320",
+    "n": "Otras actividades postales y de correos",
+    "f": "FESMC"
+  },
+  {
+    "c": "5510",
+    "n": "Hoteles y alojamientos similares",
+    "f": "FESMC"
+  },
+  {
+    "c": "5520",
+    "n": "Alojamientos turísticos de corta estancia",
+    "f": "FESMC"
+  },
+  {
+    "c": "5530",
+    "n": "Campings",
+    "f": "FESMC"
+  },
+  {
+    "c": "5590",
+    "n": "Otros alojamientos",
+    "f": "FESMC / UGT-SP"
+  },
+  {
+    "c": "5610",
+    "n": "Restaurantes y puestos de comidas",
+    "f": "FESMC"
+  },
+  {
+    "c": "5621",
+    "n": "Provisión de comidas para eventos",
+    "f": "FESMC"
+  },
+  {
+    "c": "5629",
+    "n": "Otros servicios de comidas",
+    "f": "FESMC"
+  },
+  {
+    "c": "5630",
+    "n": "Establecimientos de bebidas",
+    "f": "FESMC"
+  },
+  {
+    "c": "5811",
+    "n": "Edición de libros",
+    "f": "FESMC"
+  },
+  {
+    "c": "5812",
+    "n": "Edición de guías de direcciones",
+    "f": "FESMC"
+  },
+  {
+    "c": "5813",
+    "n": "Edición de periódicos",
+    "f": "FESMC"
+  },
+  {
+    "c": "5814",
+    "n": "Edición de revistas",
+    "f": "FESMC"
+  },
+  {
+    "c": "5819",
+    "n": "Otras actividades editoriales",
+    "f": "FESMC"
+  },
+  {
+    "c": "5821",
+    "n": "Edición de videojuegos",
+    "f": "FESMC"
+  },
+  {
+    "c": "5829",
+    "n": "Edición de otros programas informáticos",
+    "f": "FESMC"
+  },
+  {
+    "c": "5912",
+    "n": "Actividades de postproducción cinematográfica",
+    "f": "FESMC"
+  },
+  {
+    "c": "5914",
+    "n": "Actividades de exhibición cinematográfica",
+    "f": "FESMC"
+  },
+  {
+    "c": "5915",
+    "n": "Actividades de producción cinematográfica y vídeo",
+    "f": "FESMC"
+  },
+  {
+    "c": "5916",
+    "n": "Actividades de producción de televisión",
+    "f": "FESMC"
+  },
+  {
+    "c": "5917",
+    "n": "Actividades de distribución cinematográfica",
+    "f": "FESMC"
+  },
+  {
+    "c": "5918",
+    "n": "Actividades de distribución de programas de televisión",
+    "f": "FESMC"
+  },
+  {
+    "c": "5920",
+    "n": "Grabación de sonido y edición musical",
+    "f": "FESMC"
+  },
+  {
+    "c": "6010",
+    "n": "Actividades de radiodifusión",
+    "f": "FESMC"
+  },
+  {
+    "c": "6020",
+    "n": "Programación y emisión de televisión",
+    "f": "FESMC"
+  },
+  {
+    "c": "6110",
+    "n": "Telecomunicaciones por cable",
+    "f": "FICA / FESMC"
+  },
+  {
+    "c": "6120",
+    "n": "Telecomunicaciones inalámbricas",
+    "f": "FESMC"
+  },
+  {
+    "c": "6130",
+    "n": "Telecomunicaciones por satélite",
+    "f": "FESMC"
+  },
+  {
+    "c": "6190",
+    "n": "Otras actividades de telecomunicaciones",
+    "f": "FESMC"
+  },
+  {
+    "c": "6201",
+    "n": "Actividades de programación informática",
+    "f": "FESMC"
+  },
+  {
+    "c": "6202",
+    "n": "Actividades de consultoría informática",
+    "f": "FESMC"
+  },
+  {
+    "c": "6203",
+    "n": "Gestión de recursos informáticos",
+    "f": "FESMC"
+  },
+  {
+    "c": "6209",
+    "n": "Otros servicios de tecnologías de la información",
+    "f": "FESMC"
+  },
+  {
+    "c": "6311",
+    "n": "Proceso de datos y hosting",
+    "f": "FESMC"
+  },
+  {
+    "c": "6312",
+    "n": "Portales web",
+    "f": "FESMC"
+  },
+  {
+    "c": "6391",
+    "n": "Actividades de agencias de noticias",
+    "f": "FESMC"
+  },
+  {
+    "c": "6399",
+    "n": "Otros servicios de información n.c.o.p.",
+    "f": "FESMC"
+  },
+  {
+    "c": "6411",
+    "n": "Banco central",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "6419",
+    "n": "Otra intermediación monetaria",
+    "f": "FESMC"
+  },
+  {
+    "c": "6420",
+    "n": "Actividades de sociedades holding",
+    "f": "FESMC"
+  },
+  {
+    "c": "6430",
+    "n": "Inversión colectiva y fondos",
+    "f": "FESMC"
+  },
+  {
+    "c": "6491",
+    "n": "Arrendamiento financiero",
+    "f": "FESMC"
+  },
+  {
+    "c": "6492",
+    "n": "Otras actividades crediticias",
+    "f": "FESMC"
+  },
+  {
+    "c": "6499",
+    "n": "Otros servicios financieros n.c.o.p.",
+    "f": "FESMC"
+  },
+  {
+    "c": "6511",
+    "n": "Seguros de vida",
+    "f": "FESMC"
+  },
+  {
+    "c": "6512",
+    "n": "Seguros distintos de vida",
+    "f": "FESMC"
+  },
+  {
+    "c": "6520",
+    "n": "Reaseguro",
+    "f": "FESMC"
+  },
+  {
+    "c": "6530",
+    "n": "Fondos de pensiones",
+    "f": "FESMC"
+  },
+  {
+    "c": "6611",
+    "n": "Administración de mercados financieros",
+    "f": "FESMC"
+  },
+  {
+    "c": "6612",
+    "n": "Intermediación en operaciones con valores",
+    "f": "FESMC"
+  },
+  {
+    "c": "6619",
+    "n": "Actividades auxiliares a servicios financieros",
+    "f": "FESMC"
+  },
+  {
+    "c": "6621",
+    "n": "Evaluación de riesgos y daños",
+    "f": "FESMC"
+  },
+  {
+    "c": "6622",
+    "n": "Actividades de agentes de seguros",
+    "f": "FESMC"
+  },
+  {
+    "c": "6629",
+    "n": "Otras actividades auxiliares a seguros",
+    "f": "FESMC"
+  },
+  {
+    "c": "6630",
+    "n": "Actividades de gestión de fondos",
+    "f": "FESMC"
+  },
+  {
+    "c": "6810",
+    "n": "Compraventa de bienes inmobiliarios",
+    "f": "FESMC"
+  },
+  {
+    "c": "6820",
+    "n": "Alquiler de bienes inmobiliarios",
+    "f": "FESMC"
+  },
+  {
+    "c": "6831",
+    "n": "Agentes de la propiedad inmobiliaria",
+    "f": "FESMC"
+  },
+  {
+    "c": "6832",
+    "n": "Gestión y administración inmobiliaria",
+    "f": "FESMC"
+  },
+  {
+    "c": "6910",
+    "n": "Actividades jurídicas",
+    "f": "FESMC"
+  },
+  {
+    "c": "6920",
+    "n": "Contabilidad, auditoría y asesoría fiscal",
+    "f": "FESMC"
+  },
+  {
+    "c": "7010",
+    "n": "Actividades de sedes centrales",
+    "f": "FESMC"
+  },
+  {
+    "c": "7021",
+    "n": "Relaciones públicas y comunicación",
+    "f": "FESMC"
+  },
+  {
+    "c": "7022",
+    "n": "Consultoría de gestión empresarial",
+    "f": "FESMC"
+  },
+  {
+    "c": "7111",
+    "n": "Servicios técnicos de arquitectura",
+    "f": "FESMC"
+  },
+  {
+    "c": "7112",
+    "n": "Servicios técnicos de ingeniería",
+    "f": "FESMC"
+  },
+  {
+    "c": "7120",
+    "n": "Ensayos y análisis técnicos",
+    "f": "FICA / FESMC / UGT-SP"
+  },
+  {
+    "c": "7211",
+    "n": "Investigación en biotecnología",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "7219",
+    "n": "Investigación en ciencias naturales y técnicas",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "7220",
+    "n": "Investigación en ciencias sociales",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "7311",
+    "n": "Agencias de publicidad",
+    "f": "FESMC"
+  },
+  {
+    "c": "7312",
+    "n": "Representación de medios de comunicación",
+    "f": "FESMC"
+  },
+  {
+    "c": "7320",
+    "n": "Estudios de mercado y encuestas",
+    "f": "FESMC"
+  },
+  {
+    "c": "7410",
+    "n": "Actividades de diseño especializado",
+    "f": "FESMC"
+  },
+  {
+    "c": "7420",
+    "n": "Actividades de fotografía",
+    "f": "FESMC"
+  },
+  {
+    "c": "7430",
+    "n": "Actividades de traducción e interpretación",
+    "f": "FESMC"
+  },
+  {
+    "c": "7490",
+    "n": "Otras actividades profesionales n.c.o.p.",
+    "f": "FESMC"
+  },
+  {
+    "c": "7500",
+    "n": "Actividades veterinarias",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "7711",
+    "n": "Alquiler de automóviles",
+    "f": "FESMC"
+  },
+  {
+    "c": "7712",
+    "n": "Alquiler de camiones",
+    "f": "FESMC"
+  },
+  {
+    "c": "7721",
+    "n": "Alquiler de artículos de ocio y deportivos",
+    "f": "FESMC"
+  },
+  {
+    "c": "7722",
+    "n": "Alquiler de cintas de vídeo y discos",
+    "f": "FESMC"
+  },
+  {
+    "c": "7729",
+    "n": "Alquiler de otros efectos personales",
+    "f": "FESMC"
+  },
+  {
+    "c": "7731",
+    "n": "Alquiler de maquinaria agrícola",
+    "f": "FESMC"
+  },
+  {
+    "c": "7732",
+    "n": "Alquiler de maquinaria para construcción",
+    "f": "FESMC"
+  },
+  {
+    "c": "7733",
+    "n": "Alquiler de maquinaria de oficina e informática",
+    "f": "FESMC"
+  },
+  {
+    "c": "7734",
+    "n": "Alquiler de medios de navegación",
+    "f": "FESMC"
+  },
+  {
+    "c": "7735",
+    "n": "Alquiler de medios de transporte aéreo",
+    "f": "FESMC"
+  },
+  {
+    "c": "7739",
+    "n": "Alquiler de otra maquinaria y bienes tangibles",
+    "f": "FESMC"
+  },
+  {
+    "c": "7740",
+    "n": "Arrendamiento de propiedad intelectual",
+    "f": "FESMC"
+  },
+  {
+    "c": "7810",
+    "n": "Actividades de agencias de colocación",
+    "f": "FESMC"
+  },
+  {
+    "c": "7820",
+    "n": "Actividades de empresas de trabajo temporal",
+    "f": "FESMC"
+  },
+  {
+    "c": "7830",
+    "n": "Otra provisión de recursos humanos",
+    "f": "FESMC"
+  },
+  {
+    "c": "7911",
+    "n": "Actividades de agencias de viajes",
+    "f": "FESMC"
+  },
+  {
+    "c": "7912",
+    "n": "Actividades de operadores turísticos",
+    "f": "FESMC"
+  },
+  {
+    "c": "7990",
+    "n": "Otros servicios de reservas",
+    "f": "FESMC"
+  },
+  {
+    "c": "8010",
+    "n": "Actividades de seguridad privada",
+    "f": "FESMC"
+  },
+  {
+    "c": "8020",
+    "n": "Servicios de sistemas de seguridad",
+    "f": "FICA / FESMC"
+  },
+  {
+    "c": "8030",
+    "n": "Actividades de investigación",
+    "f": "FESMC"
+  },
+  {
+    "c": "8110",
+    "n": "Servicios integrales a edificios",
+    "f": "FESMC"
+  },
+  {
+    "c": "8121",
+    "n": "Limpieza general de edificios",
+    "f": "FESMC"
+  },
+  {
+    "c": "8122",
+    "n": "Limpieza industrial y de edificios especializada",
+    "f": "FICA / FESMC"
+  },
+  {
+    "c": "8129",
+    "n": "Otras actividades de limpieza",
+    "f": "FICA / FESMC / UGT-SP"
+  },
+  {
+    "c": "8130",
+    "n": "Actividades de jardinería",
+    "f": "FESMC / UGT-SP"
+  },
+  {
+    "c": "8211",
+    "n": "Servicios administrativos combinados",
+    "f": "FESMC"
+  },
+  {
+    "c": "8219",
+    "n": "Fotocopiado y preparación de documentos",
+    "f": "FESMC"
+  },
+  {
+    "c": "8220",
+    "n": "Actividades de centros de llamadas",
+    "f": "FESMC"
+  },
+  {
+    "c": "8230",
+    "n": "Organización de convenciones y ferias",
+    "f": "FESMC / UGT-SP"
+  },
+  {
+    "c": "8291",
+    "n": "Agencias de cobros e información comercial",
+    "f": "FESMC"
+  },
+  {
+    "c": "8292",
+    "n": "Actividades de envasado y empaquetado",
+    "f": "FESMC"
+  },
+  {
+    "c": "8299",
+    "n": "Otras actividades de apoyo a empresas n.c.o.p.",
+    "f": "FESMC"
+  },
+  {
+    "c": "8411",
+    "n": "Actividades generales de la Administración Pública",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8412",
+    "n": "Regulación sanitaria, educativa y cultural",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8413",
+    "n": "Regulación de la actividad económica",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8421",
+    "n": "Asuntos exteriores",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8422",
+    "n": "Defensa",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8423",
+    "n": "Justicia",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8424",
+    "n": "Orden público y seguridad",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8425",
+    "n": "Protección civil",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8430",
+    "n": "Seguridad Social obligatoria",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8510",
+    "n": "Educación preprimaria",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8520",
+    "n": "Educación primaria",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8531",
+    "n": "Educación secundaria general",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8532",
+    "n": "Educación secundaria técnica",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8541",
+    "n": "Educación postsecundaria no terciaria",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8543",
+    "n": "Educación universitaria",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8544",
+    "n": "Educación terciaria no universitaria",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8551",
+    "n": "Educación deportiva y recreativa",
+    "f": "FESMC"
+  },
+  {
+    "c": "8552",
+    "n": "Educación cultural",
+    "f": "FESMC / UGT-SP"
+  },
+  {
+    "c": "8553",
+    "n": "Escuelas de conducción y pilotaje",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8559",
+    "n": "Otra educación n.c.o.p.",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8560",
+    "n": "Actividades auxiliares a la educación",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8610",
+    "n": "Actividades hospitalarias",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8621",
+    "n": "Actividades de medicina general",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8622",
+    "n": "Actividades de medicina especializada",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8623",
+    "n": "Actividades odontológicas",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8690",
+    "n": "Otras actividades sanitarias",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8710",
+    "n": "Asistencia en establecimientos residenciales",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8720",
+    "n": "Asistencia para discapacidad intelectual y mental",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8731",
+    "n": "Asistencia residencial para personas mayores",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8732",
+    "n": "Asistencia residencial para discapacidad física",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8790",
+    "n": "Otras actividades de asistencia residencial",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8811",
+    "n": "Servicios sociales sin alojamiento para mayores",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8812",
+    "n": "Servicios sociales sin alojamiento para discapacidad",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8891",
+    "n": "Cuidado diurno de niños",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "8899",
+    "n": "Otros servicios sociales sin alojamiento n.c.o.p.",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "9001",
+    "n": "Artes escénicas",
+    "f": "FESMC / UGT-SP"
+  },
+  {
+    "c": "9002",
+    "n": "Actividades auxiliares a las artes escénicas",
+    "f": "FESMC / UGT-SP"
+  },
+  {
+    "c": "9003",
+    "n": "Creación artística y literaria",
+    "f": "FESMC / UGT-SP"
+  },
+  {
+    "c": "9004",
+    "n": "Gestión de salas de espectáculos",
+    "f": "FESMC / UGT-SP"
+  },
+  {
+    "c": "9102",
+    "n": "Actividades de museos",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "9103",
+    "n": "Gestión de lugares históricos",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "9104",
+    "n": "Jardines botánicos y reservas naturales",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "9105",
+    "n": "Actividades de bibliotecas",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "9106",
+    "n": "Actividades de archivos",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "9200",
+    "n": "Actividades de juegos de azar",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "9311",
+    "n": "Gestión de instalaciones deportivas",
+    "f": "FESMC / UGT-SP"
+  },
+  {
+    "c": "9312",
+    "n": "Actividades de los clubes deportivos",
+    "f": "FESMC / UGT-SP"
+  },
+  {
+    "c": "9313",
+    "n": "Actividades de los gimnasios",
+    "f": "FESMC"
+  },
+  {
+    "c": "9319",
+    "n": "Otras actividades deportivas",
+    "f": "FESMC"
+  },
+  {
+    "c": "9321",
+    "n": "Parques de atracciones y temáticos",
+    "f": "FICA / FESMC"
+  },
+  {
+    "c": "9329",
+    "n": "Otras actividades recreativas",
+    "f": "FESMC"
+  },
+  {
+    "c": "9411",
+    "n": "Organizaciones empresariales y patronales",
+    "f": "FESMC"
+  },
+  {
+    "c": "9412",
+    "n": "Organizaciones profesionales",
+    "f": "FESMC"
+  },
+  {
+    "c": "9420",
+    "n": "Actividades sindicales",
+    "f": "FESMC"
+  },
+  {
+    "c": "9491",
+    "n": "Organizaciones religiosas",
+    "f": "FESMC"
+  },
+  {
+    "c": "9492",
+    "n": "Organizaciones políticas",
+    "f": "FESMC"
+  },
+  {
+    "c": "9499",
+    "n": "Otras actividades asociativas n.c.o.p.",
+    "f": "FESMC"
+  },
+  {
+    "c": "9511",
+    "n": "Reparación de ordenadores",
+    "f": "FICA"
+  },
+  {
+    "c": "9512",
+    "n": "Reparación de equipos de comunicación",
+    "f": "FICA"
+  },
+  {
+    "c": "9521",
+    "n": "Reparación de aparatos electrónicos domésticos",
+    "f": "FICA"
+  },
+  {
+    "c": "9522",
+    "n": "Reparación de aparatos electrodomésticos",
+    "f": "FICA"
+  },
+  {
+    "c": "9523",
+    "n": "Reparación de calzado y cuero",
+    "f": "FICA"
+  },
+  {
+    "c": "9524",
+    "n": "Reparación de muebles",
+    "f": "FICA"
+  },
+  {
+    "c": "9525",
+    "n": "Reparación de relojes y joyería",
+    "f": "FESMC"
+  },
+  {
+    "c": "9529",
+    "n": "Reparación de otros artículos domésticos",
+    "f": "FICA"
+  },
+  {
+    "c": "9601",
+    "n": "Lavado y limpieza de prendas textiles",
+    "f": "FESMC"
+  },
+  {
+    "c": "9602",
+    "n": "Peluquería y tratamientos de belleza",
+    "f": "FESMC"
+  },
+  {
+    "c": "9603",
+    "n": "Pompas fúnebres",
+    "f": "UGT-SP"
+  },
+  {
+    "c": "9604",
+    "n": "Mantenimiento físico",
+    "f": "FESMC"
+  },
+  {
+    "c": "9609",
+    "n": "Otros servicios personales n.c.o.p.",
+    "f": "FESMC"
+  },
+  {
+    "c": "9700",
+    "n": "Hogares como empleadores de personal doméstico",
+    "f": "FESMC"
+  },
+  {
+    "c": "9900",
+    "n": "Organizaciones extraterritoriales",
+    "f": "UGT-SP"
+  }
+];
+
+    // ── STATE ──
+    let activeFilter = 'todos';
+    let currentQuery = '';
+    let debounceTimer;
+    let visibleCount = 80;
+    const PAGE_SIZE = 80;
+
+    const input = document.getElementById('input-busqueda');
+    const clearBtn = document.getElementById('clear-btn');
+    const lista = document.getElementById('lista-cnae');
+    const statsCount = document.getElementById('stats-count');
+    const statsHint = document.getElementById('stats-hint');
+    const initialState = document.getElementById('initial-state');
+    const resultsArea = document.getElementById('results-area');
+    const emptyState = document.getElementById('empty-state');
+    const emptyText = document.getElementById('empty-text');
+    const toast = document.getElementById('toast');
+    const loadMoreWrap = document.getElementById('load-more-wrap');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const loadMoreLabel = document.getElementById('load-more-label');
+    const loadMoreInfo = document.getElementById('load-more-info');
+
+    // ── INIT COUNTS ──
+    const counts = { FICA: 0, FESMC: 0, SP: 0 };
+    cnaeMaster.forEach(item => {
+      if (item.f.includes('FICA')) counts.FICA++;
+      if (item.f.includes('FESMC')) counts.FESMC++;
+      if (item.f.includes('UGT-SP')) counts.SP++;
+    });
+    document.getElementById('count-fica').textContent = counts.FICA;
+    document.getElementById('count-fesmc').textContent = counts.FESMC;
+    document.getElementById('count-sp').textContent = counts.SP;
+
+    // ── UTILS ──
+    function normalizar(t) {
+      return t.toString().toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]/g, "");
+    }
+
+    function getCardType(fed) {
+      const hasFica = fed.includes('FICA');
+      const hasFesmc = fed.includes('FESMC');
+      const hasSp = fed.includes('UGT-SP');
+      if ((hasFica + hasFesmc + hasSp) > 1) return 'mixed';
+      if (hasFica) return 'fica';
+      if (hasFesmc) return 'fesmc';
+      if (hasSp) return 'sp';
+      return 'mixed';
+    }
+
+    function getBadgeHTML(fedStr) {
+      return fedStr.split('/').map(f => {
+        f = f.trim();
+        const cls = f === 'FICA' ? 'fica' : f === 'FESMC' ? 'fesmc' : 'sp';
+        return `<span class="badge ${cls}"><span class="badge-dot"></span>${f}</span>`;
+      }).join('');
+    }
+
+    function highlight(text, query) {
+      if (!query) return text;
+      const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return text.replace(new RegExp(q, 'gi'), m => `<mark>${m}</mark>`);
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // ── FILTERS ──
+    document.getElementById('filters-row').addEventListener('click', e => {
+      const pill = e.target.closest('.filter-pill');
+      if (!pill) return;
+      activeFilter = pill.dataset.fed;
+      visibleCount = PAGE_SIZE;
+      document.querySelectorAll('.filter-pill').forEach(p => {
+        p.className = 'filter-pill';
+      });
+      if (activeFilter === 'todos') pill.classList.add('active-all');
+      else if (activeFilter === 'FESMC') pill.classList.add('active-fesmc');
+      else if (activeFilter === 'FICA') pill.classList.add('active-fica');
+      else if (activeFilter === 'UGT-SP') pill.classList.add('active-sp');
+      render();
+    });
+
+    // ── SEARCH ──
+    input.addEventListener('input', e => {
+      currentQuery = e.target.value;
+      visibleCount = PAGE_SIZE;
+      clearBtn.classList.toggle('visible', currentQuery.length > 0);
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(render, 120);
+    });
+
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      currentQuery = '';
+      visibleCount = PAGE_SIZE;
+      clearBtn.classList.remove('visible');
+      render();
+      input.focus();
+    });
+
+    function setQuery(q) {
+      input.value = q;
+      currentQuery = q;
+      visibleCount = PAGE_SIZE;
+      clearBtn.classList.add('visible');
+      render();
+      input.focus();
+    }
+
+    // ── RENDER ──
+    function render() {
+      const q = normalizar(currentQuery);
+      const hasQuery = currentQuery.trim().length >= 1;
+
+      if (!hasQuery && activeFilter === 'todos') {
+        initialState.style.display = '';
+        resultsArea.style.display = 'none';
+        emptyState.style.display = 'none';
+        return;
+      }
+
+      initialState.style.display = 'none';
+
+      let filtrados = cnaeMaster.filter(item => {
+        const fedMatch = activeFilter === 'todos' || item.f.includes(activeFilter);
+        if (!fedMatch) return false;
+        if (!hasQuery) return true;
+        return normalizar(item.n).includes(q) || normalizar(item.c).includes(q);
+      });
+
+      const total = filtrados.length;
+      const mostrar = filtrados.slice(0, visibleCount);
+      const hayMas = total > visibleCount;
+      const restantes = total - visibleCount;
+
+      if (total === 0) {
+        resultsArea.style.display = 'none';
+        emptyState.style.display = '';
+        loadMoreWrap.style.display = 'none';
+        emptyText.innerHTML = activeFilter !== 'todos'
+          ? `No hay resultados en <strong>${activeFilter}</strong> para esta búsqueda`
+          : 'Prueba con términos más cortos<br>o cambia el filtro';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      resultsArea.style.display = '';
+      statsCount.innerHTML = `<strong>${total}</strong> resultado${total !== 1 ? 's' : ''}`;
+      statsHint.textContent = hayMas ? `Mostrando ${visibleCount} de ${total}` : '';
+
+      const rawQ = currentQuery.trim();
+
+      lista.innerHTML = mostrar.map((item, i) => `
+        <div class="cnae-card type-${getCardType(item.f)}"
+             style="animation-delay:${Math.min(i * 18, 300)}ms"
+             onclick="copyCode('${item.c}')">
+          <div class="card-code-block">
+            <span class="card-code">${item.c}</span>
+            <span class="card-code-label">CNAE</span>
+          </div>
+          <div class="card-divider"></div>
+          <div class="card-body">
+            <div class="card-name">${highlight(item.n, rawQ)}</div>
+            <div class="card-badges">${getBadgeHTML(item.f)}</div>
+          </div>
+        </div>
+      `).join('');
+
+      // Load more button
+      if (hayMas) {
+        const siguientes = Math.min(PAGE_SIZE, restantes);
+        loadMoreLabel.textContent = `Cargar ${siguientes} más`;
+        loadMoreInfo.textContent = `${restantes} actividade${restantes !== 1 ? 's' : ''} restante${restantes !== 1 ? 's' : ''}`;
+        loadMoreWrap.style.display = 'flex';
+      } else {
+        loadMoreWrap.style.display = 'none';
+      }
+    }
+
+    // ── LOAD MORE ──
+    loadMoreBtn.addEventListener('click', () => {
+      visibleCount += PAGE_SIZE;
+      render();
+      // Scroll suave al primer elemento nuevo
+      const cards = lista.querySelectorAll('.cnae-card');
+      const primeraNueva = cards[visibleCount - PAGE_SIZE];
+      if (primeraNueva) {
+        primeraNueva.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    // ── COPY ──
+    function copyCode(code) {
+      navigator.clipboard?.writeText(code).then(() => showToast(`✓ Código ${code} copiado`));
+      if (navigator.vibrate) navigator.vibrate(40);
+    }
+
+    // Init
+    render();
+  </script>
+</body>
+</html>
