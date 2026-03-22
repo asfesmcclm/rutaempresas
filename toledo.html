@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Censo Ciudad Real 2026</title>
+    <title>Censo Toledo 2026</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
@@ -35,7 +35,7 @@
     <div class="px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-slate-700 font-bold">analytics</span>
-            <h1 class="text-lg font-extrabold tracking-tight text-slate-800">Censo Ciudad Real 2026</h1>
+            <h1 class="text-lg font-extrabold tracking-tight text-slate-800">Censo Toledo 2026</h1>
         </div>
         <div class="text-[10px] font-black text-slate-400 bg-slate-100 px-2 py-1 rounded">V1.5</div>
     </div>
@@ -60,7 +60,7 @@
     <div id="lista-empresas" class="space-y-4"></div>
 </main>
 
-<script src="datos.js?v=1.4"></script>
+<script src="datosTO.js"></script>
 
 <script>
     const buscador = document.getElementById('buscador');
@@ -70,7 +70,6 @@
     
     let filtroTipo = 'TODAS';
 
-    // Función crucial para manejar "Con elecciones", "Blanca", etc.
     function normalizarTipo(texto) {
         if (!texto) return "BLANCA";
         const t = texto.toLowerCase().trim();
@@ -79,7 +78,8 @@
     }
 
     function abrirRuta(empresa, municipio, direccion, cp) {
-        const destinoFull = `${direccion}, ${cp} ${municipio}, Ciudad Real, España`;
+        // Adaptado para la provincia de Toledo
+        const destinoFull = `${direccion}, ${cp} ${municipio}, Toledo, España`;
         const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinoFull)}&travelmode=driving`;
         window.open(url, '_blank');
     }
@@ -103,14 +103,14 @@
 
     function render(query = '') {
         if (typeof empresas === 'undefined') {
-            lista.innerHTML = '<div class="py-10 text-center text-slate-400 text-xs font-medium italic">Esperando base de datos...</div>';
+            lista.innerHTML = '<div class="py-10 text-center text-slate-400 text-xs font-medium italic">Archivo datosTO.js no encontrado...</div>';
             return;
         }
 
         const q = query.toLowerCase().trim();
         const filtrados = empresas.filter(e => {
-            const matchQuery = e.empresa.toLowerCase().includes(q) || 
-                               e.municipio.toLowerCase().includes(q) || 
+            const matchQuery = (e.empresa || '').toLowerCase().includes(q) || 
+                               (e.municipio || '').toLowerCase().includes(q) || 
                                (e.sector && e.sector.toLowerCase().includes(q)) ||
                                (e.cif && e.cif.toLowerCase().includes(q));
             
@@ -123,13 +123,16 @@
         actualizarStats(filtrados);
 
         if (filtrados.length === 0) {
-            lista.innerHTML = '<div class="py-20 text-center text-slate-400 text-sm italic font-medium">No se han encontrado empresas</div>';
+            lista.innerHTML = '<div class="py-20 text-center text-slate-400 text-sm italic font-medium">No se han encontrado empresas en Toledo</div>';
             return;
         }
 
         lista.innerHTML = filtrados.slice(0, 100).map(e => {
             const tipoE = normalizarTipo(e.tipo);
             const esSi = tipoE === 'SI';
+            
+            const empresaEscapada = (e.empresa || '').replace(/'/g, "\\'");
+            const direccionEscapada = (e.direccion || '').replace(/'/g, "\\'");
 
             return `
             <div class="bg-white rounded-xl p-4 shadow-sm ${esSi ? 'card-si' : 'card-blanca'}">
@@ -138,7 +141,7 @@
                     <div class="flex flex-col items-end gap-1">
                         <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-slate-50 text-slate-400 border border-slate-100">${e.id}</span>
                         <span class="text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${esSi ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}">
-                            ${esSi ? 'Con Elecciones' : 'Sin Elecciones'}
+                            ${esSi ? 'Con Elecciones' : 'Blanca'}
                         </span>
                     </div>
                 </div>
@@ -167,7 +170,7 @@
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <button onclick="abrirRuta('${e.empresa.replace(/'/g, "\\'")}', '${e.municipio}', '${(e.direccion || "").replace(/'/g, "\\'")}', '${e.cp}')" 
+                    <button onclick="abrirRuta('${empresaEscapada}', '${e.municipio}', '${direccionEscapada}', '${e.cp}')" 
                         class="w-full bg-slate-800 text-white py-3 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
                         <span class="material-symbols-outlined text-sm">directions_car</span> Calcular Ruta
                     </button>
@@ -178,7 +181,8 @@
                     </button>
                 </div>
             </div>
-        `}).join('');
+            `;
+        }).join('');
     }
 
     filtrosBtn.forEach(btn => btn.addEventListener('click', () => {
@@ -191,7 +195,10 @@
     }));
 
     buscador.addEventListener('input', (e) => render(e.target.value));
-    window.onload = () => setTimeout(() => render(), 100);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => render(), 300);
+    });
 </script>
 </body>
 </html>

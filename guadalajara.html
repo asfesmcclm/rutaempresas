@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Censo Ciudad Real 2026</title>
+    <title>Censo Guadalajara 2026</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
@@ -35,7 +35,7 @@
     <div class="px-5 py-4 flex items-center justify-between">
         <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-slate-700 font-bold">analytics</span>
-            <h1 class="text-lg font-extrabold tracking-tight text-slate-800">Censo Ciudad Real 2026</h1>
+            <h1 class="text-lg font-extrabold tracking-tight text-slate-800">Censo Guadalajara 2026</h1>
         </div>
         <div class="text-[10px] font-black text-slate-400 bg-slate-100 px-2 py-1 rounded">V1.5</div>
     </div>
@@ -60,7 +60,7 @@
     <div id="lista-empresas" class="space-y-4"></div>
 </main>
 
-<script src="datos.js?v=1.4"></script>
+<script src="datosGU.js"></script>
 
 <script>
     const buscador = document.getElementById('buscador');
@@ -70,16 +70,18 @@
     
     let filtroTipo = 'TODAS';
 
-    // Función crucial para manejar "Con elecciones", "Blanca", etc.
+    // Normalización para que coincida con tu datos.js generado
     function normalizarTipo(texto) {
         if (!texto) return "BLANCA";
         const t = texto.toLowerCase().trim();
+        // Coincide con "Con elecciones" o "si"
         if (t.includes("elecciones") || t === "si") return "SI";
         return "BLANCA";
     }
 
     function abrirRuta(empresa, municipio, direccion, cp) {
-        const destinoFull = `${direccion}, ${cp} ${municipio}, Ciudad Real, España`;
+        // Corregido: Destino limpio para Google Maps
+        const destinoFull = `${direccion}, ${cp} ${municipio}, Guadalajara, España`;
         const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinoFull)}&travelmode=driving`;
         window.open(url, '_blank');
     }
@@ -102,15 +104,16 @@
     }
 
     function render(query = '') {
+        // Verificación de base de datos
         if (typeof empresas === 'undefined') {
-            lista.innerHTML = '<div class="py-10 text-center text-slate-400 text-xs font-medium italic">Esperando base de datos...</div>';
+            lista.innerHTML = '<div class="py-10 text-center text-slate-400 text-xs font-medium italic">Archivo datosGU.js no encontrado o vacío...</div>';
             return;
         }
 
         const q = query.toLowerCase().trim();
         const filtrados = empresas.filter(e => {
-            const matchQuery = e.empresa.toLowerCase().includes(q) || 
-                               e.municipio.toLowerCase().includes(q) || 
+            const matchQuery = (e.empresa || '').toLowerCase().includes(q) || 
+                               (e.municipio || '').toLowerCase().includes(q) || 
                                (e.sector && e.sector.toLowerCase().includes(q)) ||
                                (e.cif && e.cif.toLowerCase().includes(q));
             
@@ -127,9 +130,14 @@
             return;
         }
 
+        // Renderizamos máximo 100 para no bloquear el móvil
         lista.innerHTML = filtrados.slice(0, 100).map(e => {
             const tipoE = normalizarTipo(e.tipo);
             const esSi = tipoE === 'SI';
+            
+            // Escapamos comillas simples para los eventos onclick
+            const empresaEscapada = (e.empresa || '').replace(/'/g, "\\'");
+            const direccionEscapada = (e.direccion || '').replace(/'/g, "\\'");
 
             return `
             <div class="bg-white rounded-xl p-4 shadow-sm ${esSi ? 'card-si' : 'card-blanca'}">
@@ -138,7 +146,7 @@
                     <div class="flex flex-col items-end gap-1">
                         <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-slate-50 text-slate-400 border border-slate-100">${e.id}</span>
                         <span class="text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${esSi ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}">
-                            ${esSi ? 'Con Elecciones' : 'Sin Elecciones'}
+                            ${esSi ? 'Con Elecciones' : 'Blanca'}
                         </span>
                     </div>
                 </div>
@@ -167,7 +175,7 @@
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <button onclick="abrirRuta('${e.empresa.replace(/'/g, "\\'")}', '${e.municipio}', '${(e.direccion || "").replace(/'/g, "\\'")}', '${e.cp}')" 
+                    <button onclick="abrirRuta('${empresaEscapada}', '${e.municipio}', '${direccionEscapada}', '${e.cp}')" 
                         class="w-full bg-slate-800 text-white py-3 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
                         <span class="material-symbols-outlined text-sm">directions_car</span> Calcular Ruta
                     </button>
@@ -178,9 +186,11 @@
                     </button>
                 </div>
             </div>
-        `}).join('');
+            `;
+        }).join('');
     }
 
+    // Eventos de Filtros
     filtrosBtn.forEach(btn => btn.addEventListener('click', () => {
         filtrosBtn.forEach(b => {
             b.className = "filter-btn whitespace-nowrap px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 text-[11px] font-bold transition-all";
@@ -191,7 +201,11 @@
     }));
 
     buscador.addEventListener('input', (e) => render(e.target.value));
-    window.onload = () => setTimeout(() => render(), 100);
+
+    // Carga inicial
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => render(), 300);
+    });
 </script>
 </body>
 </html>
